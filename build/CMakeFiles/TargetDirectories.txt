@@ -1,4 +1,0 @@
-/home/kaylon/Projects/cpp_study/build/CMakeFiles/study_app.dir
-/home/kaylon/Projects/cpp_study/build/CMakeFiles/edit_cache.dir
-/home/kaylon/Projects/cpp_study/build/CMakeFiles/rebuild_cache.dir
-/home/kaylon/Projects/cpp_study/build/CMakeFiles/study_app_autogen.dir
