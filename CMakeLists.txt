@@ -11,8 +11,11 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets Sql)
 
-# SIMPLES - sem qt_ functions
+qt6_add_resources(kapraxis_RESOURCES resources.qrc)
+
 add_executable(kapraxis
+    src/repo/QuestaoRepoSQLite.cpp
+    src/repo/QuestaoRepoSQLite.h
     src/main.cpp
     src/app/AppWindow.cpp
     src/app/AppWindow.h
@@ -20,10 +23,9 @@ add_executable(kapraxis
     src/ui/QuestoesPage.h
     src/ui/InicioPage.cpp
     src/ui/InicioPage.h
-    src/repo/QuestaoRepoSQLite.cpp
-    src/repo/QuestaoRepoSQLite.h
-
-
+    src/ui/BlocosPage.h
+    src/ui/BlocosPage.cpp
+    ${kapraxis_RESOURCES}
 )
 
 target_include_directories(kapraxis PRIVATE src)

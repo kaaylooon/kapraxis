@@ -11,62 +11,71 @@
 
 #include "../ui/InicioPage.h"
 #include "../ui/QuestoesPage.h"
+#include "../ui/BlocosPage.h"
 
 AppWindow::AppWindow(QWidget* parent)
     : QMainWindow(parent)
 {
-    carregarEstiloGlobal();
-    
     auto* central = new QWidget(this);
     auto* mainLayout = new QHBoxLayout(central);
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(0);
     
-    // === SIDEBAR SIMPLES E BONITA ===
     sidebar = new QListWidget;
     sidebar->setObjectName("sidebar");
-    sidebar->setFixedWidth(170);  // Largura fixa
     sidebar->setFocusPolicy(Qt::NoFocus);
     sidebar->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     sidebar->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    
-    // Adicionar todos os itens
-    QStringList items = {"Início", "Questões", "Revisão", "Blocos"};
-    for (const QString& item : items) {
-        QListWidgetItem* listItem = new QListWidgetItem(item, sidebar);
-        listItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    sidebar->setIconSize(QSize(32, 32));
+
+    QStringList labels = {"", "", "", ""};
+    QStringList iconPaths = {
+        ":/resources/icons/house.svg",
+        ":/resources/icons/list-ul.svg",
+        ":/resources/icons/view-list.svg",
+        ":/resources/icons/stopwatch.svg"
+    };
+
+    for (int i = 0; i < labels.size(); ++i) {
+        QListWidgetItem *item = new QListWidgetItem(sidebar);
+        item->setIcon(QIcon(iconPaths[i]));
+        item->setText(labels[i]);
+        item->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     }
     
-    // === ÁREA DE CONTEÚDO ===
     pages = new QStackedWidget;
     
-    // Criar páginas
-    pages->addWidget(new InicioPage);
-    pages->addWidget(new QuestoesPage);
-    pages->addWidget(new QLabel("Revisão (em desenvolvimento)"));
-    pages->addWidget(new QLabel("Blocos (em desenvolvimento)"));
+    pages->addWidget(new InicioPage());
+    pages->addWidget(new QuestoesPage());
+    pages->addWidget(new QLabel("em desenvolvimento)"));
+    pages->addWidget(new BlocosPage());
     
-    // Adicionar à layout principal
-    mainLayout->addWidget(sidebar);
-    mainLayout->addWidget(pages, 1);  // Expande para preencher
+    mainLayout->addWidget(sidebar, 1);
+    mainLayout->addWidget(pages, 10); 
     
     setCentralWidget(central);
-    setWindowTitle("Kasty");
+    setWindowTitle("Kapraxis");
     resize(1280, 720);
     
     connect(sidebar, &QListWidget::currentRowChanged,
             pages, &QStackedWidget::setCurrentIndex);
     
     sidebar->setCurrentRow(0);
+
+    carregarEstiloGlobal();
 }
 
 void AppWindow::carregarEstiloGlobal() {
     QString style = R"(
+
+        *{
+            font-size: 15px;
+            font-family: 'Arial', sans-serif;
+        }
+
         QWidget {
             background-color: #151515; /* Very Dark Gray */
             color: #e0e0e0; /* Light Gray for text */
-            font-family: 'Segoe UI', 'Roboto', sans-serif;
-            font-size: 15px;
         }
         
         /* ===== SIDEBAR ===== */
@@ -74,16 +83,30 @@ void AppWindow::carregarEstiloGlobal() {
             background-color: #2a2a2a; /* Black */
             border: none;
             color: #cccccc; /* Lighter Gray for sidebar text */
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 500;
             border-radius: 6px;
             margin: 5px;
             margin-right: 0px;
             border-right: 1px solid #2a2a2a; /* Dark Gray border */
         }
+
+        QListWidget::icon {
+            margin-right: 12px;
+        }
+
+        QListWidget::item:selected QIcon {
+            color: white;
+        }
+
+        QListWidget::item:hover QIcon {
+            transform: scale(1.1);
+            transition: transform 0.2s;
+        }
         
         QListWidget#sidebar::item {
             padding: 14px 20px;
+            margin: 1px;
             border-bottom: 1px solid rgba(62, 62, 62, 0.3); /* Subtle border from #3e3e3e */
             background-color: transparent;
         }
@@ -188,23 +211,45 @@ void AppWindow::carregarEstiloGlobal() {
             border-radius: 8px;
             padding: 7px;
             color: #ddd;
+            show-decoration-selected: 0;
             alternate-background-color: rgba(0, 0, 0, 0.05);
+            outline: 0;
         }
-        
+
         QListWidget::item {
-            padding: 10px;
+            margin: 0;
             border-bottom: 1px solid rgba(62, 62, 62, 0.1); /* Subtle border from #3e3e3e */
-            border-radius: 4px;
-            background-color: transparent;
+            border-radius: 8px;
+            background-color: rgba(62, 62, 62, 0.1);
+            outline: none;
+            selection-background-color: transparent;
         }
-        
+
         QListWidget::item:hover {
-            background-color: rgba(62, 62, 62, 0.1); /* Subtle hover from #3e3e3e */
+            background-color: rgba(62, 62, 62, 0.2); /* Subtle hover from #3e3e3e */
         }
-        
-        QListWidget::item:selected {
+
+        QListWidget#lista::item:selected {
             background-color: #3e3e3e; /* Medium Dark Gray for selection */
             color: white;
+            border: none;
+            outline: none;
+        }
+
+        QListWidget#lista::item:selected:!active {
+            background-color: #3e3e3e;
+            color: white;
+            border: none;
+        }
+
+        /* Adicionar estas propriedades para controlar o comportamento de foco */
+        QListWidget#lista:focus {
+            outline: none;
+            border: none;
+        }
+
+        QListWidget#lista::item:focus {
+            outline: none;
             border: none;
         }
         
@@ -223,6 +268,16 @@ void AppWindow::carregarEstiloGlobal() {
         /* ===== SPECIFIC BUTTONS (Neutralized for minimalism) ===== */
         QPushButton#btnAdd {
             background-color: #3e3e3e; /* Medium Dark Gray */
+        }
+
+        QLabel#lblTags{
+            background-color: #fff; color: #000;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        QLabel#lblData{
+            color: #666; font-size: 12px;
         }
         
         QPushButton#btnAdd:hover {

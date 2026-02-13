@@ -10,6 +10,8 @@
 #include <QRadioButton>
 #include <QSpinBox>
 #include <QComboBox>
+#include <QShortcut>
+#include <QTimer>
 
 class QListWidget;
 class QLabel;
@@ -23,19 +25,28 @@ class QuestoesPage : public QWidget {
 public:
     explicit QuestoesPage(QWidget* parent = nullptr);
 
+protected:
+    void keyPressEvent(QKeyEvent* event) override;
+    void showEvent(QShowEvent* event) override;
+
 private slots:
     void adicionarQuestao();
     void editarQuestao();
     void excluirQuestao();
+
     void mostrarDetalhes(QListWidgetItem* item);
-    void recarregar();
+
     void carregarEstilo();
-    void alternarVisualizacao();
-    void atualizarVisualizacao();
-    void atualizarTamanhoGrid(int colunas);
+    void salvarResposta();
     void filtrarQuestoes(int index);
+    void buscarQuestoes(const QString& texto);
+    void focarBusca();
 
 private:
+    void recarregar();
+    void setupShortcuts();
+    void destacarItem(QListWidgetItem* item);
+
     QuestaoRepoSQLite* repo;
 
     QListWidget* lista;
@@ -48,19 +59,20 @@ private:
     QLabel* lblTags;
     QLabel* lblData;
     QLabel* lblTitle;
+    QLabel* lblInfo;
     
     QTextEdit* txtEnunciado;
     QTextEdit* txtResposta;
 
-    QPushButton* btnToggleView;
+    QLineEdit* txtBusca;
 
-    QRadioButton* rbtnListView;
-    QRadioButton* rbtnGridView;
-    QSpinBox* spinColumns;
     QComboBox* comboFilterTag;
 
-
     QFrame* rightFrame;
+
+    QShortcut* atalhoNovaQuestao;
+    QShortcut* atalhoSalvar;
+    QShortcut* atalhoBusca;
 };
 
 #endif

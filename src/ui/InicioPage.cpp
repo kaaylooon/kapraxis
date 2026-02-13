@@ -10,8 +10,8 @@ InicioPage::InicioPage(QWidget* parent)
     auto* layout = new QVBoxLayout(this);
     layout->setAlignment(Qt::AlignCenter);
     
-    auto* title = new QLabel("📚 Kasty");
-    title->setStyleSheet("font-size: 32px; font-weight: bold; color: #2c3e50; margin-top: 40%");
+    auto* title = new QLabel("📚 Kapraxis");
+    title->setStyleSheet("font-size: 32px; font-weight: bold; color: #2c3e50; margin-top: 50%");
     
     auto* subtitle = new QLabel("Sistema de Gestão de Estudos");
     subtitle->setStyleSheet("font-size: 16px; color: #7f8c8d;");
