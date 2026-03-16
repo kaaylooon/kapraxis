@@ -12,6 +12,7 @@
 #include <QComboBox>
 #include <QShortcut>
 #include <QTimer>
+#include "../domain/Questao.h"
 
 class QListWidget;
 class QLabel;
@@ -19,6 +20,7 @@ class QTextEdit;
 class QPushButton;
 class QuestaoRepoSQLite;
 class QFrame;
+class QGroupBox;
 
 class QuestoesPage : public QWidget {
     Q_OBJECT
@@ -46,7 +48,10 @@ private:
     void recarregar();
     void setupShortcuts();
     void destacarItem(QListWidgetItem* item);
-
+    bool abrirDialogQuestao(Questao& ioQuestao,
+                            const QString& titulo,
+                            const QString& header,
+                            const QString& actionLabel);
     QuestaoRepoSQLite* repo;
 
     QListWidget* lista;
@@ -63,6 +68,7 @@ private:
     
     QTextEdit* txtEnunciado;
     QTextEdit* txtResposta;
+    QGroupBox* detailsPanelGroup;
 
     QLineEdit* txtBusca;
 
@@ -73,6 +79,8 @@ private:
     QShortcut* atalhoNovaQuestao;
     QShortcut* atalhoSalvar;
     QShortcut* atalhoBusca;
+
+    QTimer* autoSaveTimer;
 };
 
 #endif

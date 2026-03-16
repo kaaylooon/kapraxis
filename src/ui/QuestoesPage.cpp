@@ -4,7 +4,6 @@
 #include <QHBoxLayout>
 #include <QListWidget>
 #include <QPushButton>
-#include <QInputDialog>
 #include <QDateTime>
 #include <QLabel>
 #include <QTextEdit>
@@ -14,10 +13,7 @@
 #include <QFrame>
 #include <QFile>
 #include <QLineEdit>
-#include <QCheckBox>
 #include <QComboBox>
-#include <QSpinBox>
-#include <QRadioButton>
 #include <QPainter>
 #include <QShortcut>
 #include <QTimer>
@@ -27,8 +23,23 @@
 #include <QPropertyAnimation>
 #include <QEasingCurve>
 #include <QParallelAnimationGroup>
+#include <QDialog>
+#include <QDialogButtonBox>
 
 #include "../repo/QuestaoRepoSQLite.h"
+
+static QString buildTagsHtml(const QStringList& tags) {
+    if (tags.isEmpty()) {
+        return "<span style='padding: 4px 8px; border-radius: 999px; background-color: #3e3e3e; border: 1px solid #535353; color: #e0e0e0;'>Sem tags</span>";
+    }
+
+    QString html;
+    for (const auto& tag : tags) {
+        html += QString("<span style='padding: 4px 8px; border-radius: 999px; background-color: #3e3e3e; border: 1px solid #535353; color: #e0e0e0; margin-right: 6px;'>%1</span>")
+            .arg(tag.toHtmlEscaped());
+    }
+    return html;
+}
 
 QuestoesPage::QuestoesPage(QWidget* parent)
     : QWidget(parent)
@@ -41,7 +52,11 @@ QuestoesPage::QuestoesPage(QWidget* parent)
 
     auto* mainLayout = new QVBoxLayout(this);
     mainLayout->setSpacing(10); 
-    
+
+    autoSaveTimer = new QTimer(this);
+    autoSaveTimer->setSingleShot(true);
+    autoSaveTimer->setInterval(700);
+
     
     auto* filterGroup = new QGroupBox();
     auto* filterLayout = new QHBoxLayout(filterGroup);
@@ -50,14 +65,13 @@ QuestoesPage::QuestoesPage(QWidget* parent)
     txtBusca->setObjectName("txtBusca");
     txtBusca->setPlaceholderText("Buscar...");
     txtBusca->setClearButtonEnabled(false);
-    txtBusca->setFixedHeight(46);
 
 
     comboFilterTag = new QComboBox();
+    comboFilterTag->setObjectName("comboFilterTag");
     comboFilterTag->addItem("Todas", "");
     comboFilterTag->addItem("Sem resposta", "sem_resposta");
     comboFilterTag->addItem("Com resposta", "com_resposta");
-    comboFilterTag->setFixedWidth(180);
     comboFilterTag->setEditable(false);
     
     filterLayout->addWidget(txtBusca, 1);
@@ -67,9 +81,10 @@ QuestoesPage::QuestoesPage(QWidget* parent)
     auto* contentGroup = new QGroupBox();
     contentGroup->setFlat(true);
     auto* contentLayout = new QHBoxLayout(contentGroup);
+    contentLayout->setSpacing(12);
     
     auto* listPanelGroup = new QGroupBox();
-    listPanelGroup->setMinimumWidth(400);
+    listPanelGroup->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     auto* listPanelLayout = new QVBoxLayout(listPanelGroup);
     
     lista = new QListWidget();
@@ -85,7 +100,8 @@ QuestoesPage::QuestoesPage(QWidget* parent)
     
     listPanelLayout->addWidget(lista);
     
-    auto* detailsPanelGroup = new QGroupBox();
+    detailsPanelGroup = new QGroupBox();
+    detailsPanelGroup->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     auto* detailsPanelLayout = new QVBoxLayout(detailsPanelGroup);
     detailsPanelLayout->setSpacing(15);
 
@@ -94,24 +110,22 @@ QuestoesPage::QuestoesPage(QWidget* parent)
     txtEnunciado = new QTextEdit();
     txtEnunciado->setPlaceholderText("Digite o enunciado...");
     txtEnunciado->setWordWrapMode(QTextOption::WordWrap);
-    txtEnunciado->setMinimumHeight(200);
     txtEnunciado->setWordWrapMode(QTextOption::WordWrap);
     enunciadoLayout->addWidget(txtEnunciado);
-    
+
     auto* respostaGroup = new QGroupBox();
     auto* respostaLayout = new QVBoxLayout(respostaGroup);
     txtResposta = new QTextEdit();
     txtResposta->setPlaceholderText("Digite a resposta...");
-    txtResposta->setMinimumHeight(200);
     txtResposta->setWordWrapMode(QTextOption::WordWrap);
     respostaLayout->addWidget(txtResposta);
-    
+
     auto* infoGroup = new QGroupBox();
     auto* infoLayout = new QHBoxLayout(infoGroup);
     lblTags = new QLabel("Sem tags");
-    lblTags->setStyleSheet("color: #666;");
+    lblTags->setTextFormat(Qt::RichText);
     lblData = new QLabel("--/--/----");
-    lblData->setStyleSheet("color: #666;");
+    lblData->setObjectName("lblData");
     
     lblInfo = new QLabel(""); 
     
@@ -119,11 +133,11 @@ QuestoesPage::QuestoesPage(QWidget* parent)
     infoLayout->addStretch();
     infoLayout->addWidget(lblData);
     
-    detailsPanelLayout->addWidget(txtEnunciado);
-    detailsPanelLayout->addWidget(txtResposta);
+    detailsPanelLayout->addWidget(enunciadoGroup);
+    detailsPanelLayout->addWidget(respostaGroup);
     detailsPanelLayout->addStretch();
-    detailsPanelLayout->addWidget(infoGroup);
     detailsPanelLayout->addWidget(lblInfo);
+    detailsPanelLayout->addWidget(infoGroup);
     
     contentLayout->addWidget(listPanelGroup, 3);
     contentLayout->addWidget(detailsPanelGroup, 2);
@@ -164,34 +178,32 @@ QuestoesPage::QuestoesPage(QWidget* parent)
             this, &QuestoesPage::excluirQuestao);
     connect(lista, &QListWidget::itemClicked,
             this, &QuestoesPage::mostrarDetalhes);
+    connect(lista, &QListWidget::currentItemChanged, this, [this](QListWidgetItem* current, QListWidgetItem*) {
+        if (!current) {
+            detailsPanelGroup->setVisible(false);
+            return;
+        }
+        detailsPanelGroup->setVisible(true);
+        mostrarDetalhes(current);
+    });
     connect(comboFilterTag, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &QuestoesPage::filtrarQuestoes);
     connect(txtResposta, &QTextEdit::textChanged, [this]() {
-        QListWidgetItem* item = lista->currentItem();
-        if (item) {
-            int id = item->data(Qt::UserRole).toInt();
-            // implementaria a atualização no banco
-        }
+        if (!lista->currentItem()) return;
+        autoSaveTimer->start();
     });
-    
+
+    connect(autoSaveTimer, &QTimer::timeout, this, &QuestoesPage::salvarResposta);
+
+    detailsPanelGroup->setVisible(false);
     recarregar();
 }
 
 void QuestoesPage::adicionarQuestao() {
-    bool ok;
-    QString enunciado = QInputDialog::getMultiLineText(
-        this, "Nova questão", "Enunciado:", "", &ok);
-    
-    if (!ok || enunciado.trimmed().isEmpty()) return;
-    
-    QString tagsStr = QInputDialog::getText(
-        this, "Tags", "Tags (separadas por vírgula):", QLineEdit::Normal, "", &ok);
-    
     Questao q;
-    q.enunciado = enunciado;
-    q.resposta = "";
-    q.tags = tagsStr.split(",", Qt::SkipEmptyParts);
-    q.criadaEm = QDateTime::currentDateTime();
+    if (!abrirDialogQuestao(q, "Nova questão", "Adicionar questão", "Salvar")) {
+        return;
+    }
     
     repo->salvar(q);
     recarregar();
@@ -291,16 +303,13 @@ void QuestoesPage::editarQuestao() {
     Questao questao = repo->buscarPorId(id);
 
     if (questao.id == 0) return; 
-    
-    bool ok;
-    QString novoEnunciado = QInputDialog::getMultiLineText(
-        this, "Editar questão", "Enunciado:", questao.enunciado, &ok);
-    
-    if (ok && !novoEnunciado.trimmed().isEmpty()) {
-        questao.enunciado = novoEnunciado;
-        repo->atualizar(questao);
-        recarregar();
+
+    if (!abrirDialogQuestao(questao, "Editar questão", "Editar questão", "Salvar alterações")) {
+        return;
     }
+
+    repo->atualizar(questao);
+    recarregar();
 }
 
 void QuestoesPage::excluirQuestao() {
@@ -322,6 +331,7 @@ void QuestoesPage::excluirQuestao() {
 
 void QuestoesPage::mostrarDetalhes(QListWidgetItem* item) {
     if (!item) return;
+    detailsPanelGroup->setVisible(true);
     
     int id = item->data(Qt::UserRole).toInt();
     auto todasQuestoes = repo->listar();
@@ -331,11 +341,7 @@ void QuestoesPage::mostrarDetalhes(QListWidgetItem* item) {
             txtEnunciado->setText(q.enunciado);
             txtResposta->setText(q.resposta);
             
-            QString tagsHtml;
-            for (const auto& tag : q.tags) {
-                tagsHtml += QString("<span style='padding: 10px; border-radius: 10px; margin: 3px;'>%1</span> ").arg(tag);
-            }
-            lblTags->setText(tagsHtml);
+            lblTags->setText(buildTagsHtml(q.tags));
             
             lblData->setText(q.criadaEm.toString("dd/MM/yyyy hh:mm"));
             break;
@@ -370,52 +376,132 @@ void QuestoesPage::recarregar() {
     }
     
     for (auto& q : questoesFiltradas) {
-        QString itemText;
-        if (lista->viewMode() == QListView::IconMode) {
-
-            // Modo grade
-            itemText = QString("%1\n%2")
-                .arg(q.enunciado.left(100) + (q.enunciado.length() > 100 ? "..." : ""))
-                .arg(q.tags.join(", "));
-        } else {
-            // Modo lista
-            itemText = QString("%1\n\n%2")
-                .arg(q.enunciado.left(300) + (q.enunciado.length() > 300 ? "..." : ""))
-                .arg(q.tags.join(", "));
-        }
-        
-        QListWidgetItem* item = new QListWidgetItem(itemText, lista);
+        auto* item = new QListWidgetItem(lista);
 
         item->setData(Qt::UserRole, q.id);
         item->setData(Qt::UserRole + 1, q.enunciado);
         item->setData(Qt::UserRole + 2, q.tags);
         item->setData(Qt::UserRole + 3, !q.resposta.trimmed().isEmpty());
         
-        QString respostaPreview = q.resposta.trimmed().isEmpty() ? "Não respondida" : q.resposta.left(100) + "...";
+        const QString enunciadoPreview = q.enunciado.left(180) + (q.enunciado.length() > 180 ? "..." : "");
+        const QString respostaPreview = q.resposta.trimmed().isEmpty()
+            ? "Sem resposta"
+            : q.resposta.left(140) + (q.resposta.length() > 140 ? "..." : "");
 
-        item->setToolTip(QString("%1\n%2\n\n%3\n%4")
-            .arg(q.enunciado)
-            .arg(respostaPreview)
-            .arg(q.tags.join(", "))
-            .arg(q.criadaEm.toString("dd/MM/yyyy - hh:mm")));
-            
-        
-        /*
-        if (!q.resposta.trimmed().isEmpty()) {
-            item->setForeground(Qt::darkGreen);
-            item->setBackground(QColor(240, 255, 240));
-        } else {
-            item->setForeground(Qt::darkRed);
-            item->setBackground(QColor(255, 240, 240));
-        }*/
-        
-        item->setTextAlignment(Qt::AlignCenter);
-        
-        // tamanho para itens no modo grid
-        if (lista->viewMode() == QListView::IconMode) {
-            item->setSizeHint(lista->gridSize());
-        }
+        auto* card = new QWidget();
+        auto* cardLayout = new QVBoxLayout(card);
+        cardLayout->setContentsMargins(12, 10, 12, 10);
+        cardLayout->setSpacing(6);
+
+        auto* lblTitulo = new QLabel(enunciadoPreview);
+        lblTitulo->setObjectName("cardTitle");
+        lblTitulo->setWordWrap(true);
+
+        auto* lblRespostaPreview = new QLabel(respostaPreview);
+        lblRespostaPreview->setObjectName("cardSubtitle");
+        lblRespostaPreview->setWordWrap(true);
+
+        auto* bottomRow = new QHBoxLayout();
+        auto* lblTagsCard = new QLabel(buildTagsHtml(q.tags));
+        lblTagsCard->setTextFormat(Qt::RichText);
+        lblTagsCard->setWordWrap(true);
+
+        auto* lblDataCard = new QLabel(q.criadaEm.toString("dd/MM/yyyy"));
+        lblDataCard->setObjectName("lblData");
+
+        bottomRow->addWidget(lblTagsCard, 1);
+        bottomRow->addStretch();
+        bottomRow->addWidget(lblDataCard, 0, Qt::AlignRight);
+
+        cardLayout->addWidget(lblTitulo);
+        cardLayout->addWidget(lblRespostaPreview);
+        cardLayout->addLayout(bottomRow);
+
+        item->setSizeHint(card->sizeHint());
+        lista->addItem(item);
+        lista->setItemWidget(item, card);
     }
+
+    if (lista->count() == 0) {
+        detailsPanelGroup->setVisible(false);
+    }
+}
+
+bool QuestoesPage::abrirDialogQuestao(Questao& ioQuestao,
+                                      const QString& titulo,
+                                      const QString& header,
+                                      const QString& actionLabel) {
+    QDialog dialog(this);
+    dialog.setWindowTitle(titulo);
+    dialog.setModal(true);
+
+    auto* layout = new QVBoxLayout(&dialog);
+    layout->setSpacing(12);
+
+    auto* headerLabel = new QLabel(header);
+    headerLabel->setStyleSheet("font-size: 20px; font-weight: 600;");
+    layout->addWidget(headerLabel);
+
+    auto* formGroup = new QGroupBox();
+    auto* formLayout = new QVBoxLayout(formGroup);
+    formLayout->setSpacing(10);
+
+    auto* lblEnunciado = new QLabel("Enunciado");
+    auto* edtEnunciado = new QTextEdit();
+    edtEnunciado->setPlaceholderText("Digite o enunciado...");
+    edtEnunciado->setText(ioQuestao.enunciado);
+
+    auto* lblResposta = new QLabel("Resposta (opcional)");
+    auto* edtResposta = new QTextEdit();
+    edtResposta->setPlaceholderText("Digite a resposta...");
+    edtResposta->setText(ioQuestao.resposta);
+
+    auto* lblTags = new QLabel("Tags");
+    auto* edtTags = new QLineEdit();
+    edtTags->setPlaceholderText("Ex.: álgebra, funções, geometria");
+    edtTags->setText(ioQuestao.tags.join(", "));
+
+    formLayout->addWidget(lblEnunciado);
+    formLayout->addWidget(edtEnunciado);
+    formLayout->addWidget(lblResposta);
+    formLayout->addWidget(edtResposta);
+    formLayout->addWidget(lblTags);
+    formLayout->addWidget(edtTags);
+
+    layout->addWidget(formGroup);
+
+    auto* buttons = new QDialogButtonBox(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
+    buttons->button(QDialogButtonBox::Save)->setText(actionLabel);
+    buttons->button(QDialogButtonBox::Cancel)->setText("Cancelar");
+    layout->addWidget(buttons);
+
+    connect(buttons, &QDialogButtonBox::accepted, [&]() {
+        if (edtEnunciado->toPlainText().trimmed().isEmpty()) {
+            QMessageBox::warning(&dialog, "Validação", "O enunciado não pode ficar vazio.");
+            return;
+        }
+        dialog.accept();
+    });
+    connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+
+    if (dialog.exec() != QDialog::Accepted) {
+        return false;
+    }
+
+    const QString tagsRaw = edtTags->text();
+    QStringList tags = tagsRaw.split(",", Qt::SkipEmptyParts);
+    for (QString& t : tags) {
+        t = t.trimmed();
+    }
+    tags.removeAll(QString());
+
+    ioQuestao.enunciado = edtEnunciado->toPlainText().trimmed();
+    ioQuestao.resposta = edtResposta->toPlainText().trimmed();
+    ioQuestao.tags = tags;
+    if (!ioQuestao.criadaEm.isValid()) {
+        ioQuestao.criadaEm = QDateTime::currentDateTime();
+    }
+    return true;
 }
 
 void QuestoesPage::carregarEstilo() {

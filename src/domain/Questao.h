@@ -4,6 +4,7 @@
 #include <QDateTime>
 
 struct Questao {
+    Questao() : id(0) {}
     int id;
     QString enunciado;
     QString resposta;

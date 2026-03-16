@@ -5,10 +5,27 @@
 #include <QSqlError>
 #include <QVariant>
 #include <QDebug>
+#include <QStandardPaths>
+#include <QDir>
+#include <QFile>
 
 QuestaoRepoSQLite::QuestaoRepoSQLite() {
+    const QString appDataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    if (!appDataDir.isEmpty()) {
+        QDir().mkpath(appDataDir);
+    }
+
+    const QString appDataDbPath = appDataDir.isEmpty()
+        ? QString("questoes.db")
+        : QDir(appDataDir).filePath("questoes.db");
+
+    // Migrar DB antigo no diretório de execução, se existir
+    if (appDataDbPath != "questoes.db" && !QFile::exists(appDataDbPath) && QFile::exists("questoes.db")) {
+        QFile::copy("questoes.db", appDataDbPath);
+    }
+
     db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("questoes.db");
+    db.setDatabaseName(appDataDbPath);
     if (!db.open()) {
         qDebug() << "Erro ao abrir banco de dados:" << db.lastError().text();
         return;

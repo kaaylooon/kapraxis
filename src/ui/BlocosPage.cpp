@@ -111,6 +111,7 @@ void BlocosPage::pausarContinuarBloco()
     if (!emPausa) {
         emPausa = true;
         timer->stop();
+        tempoDecorrido += elapsedTimer->elapsed() / 1000;
         lblStatus->setText("  Pausado");
         btnPausar->setText("▶  Continuar");
     } else {
@@ -127,6 +128,10 @@ void BlocosPage::finalizarBloco()
     if (!blocoAtivo) return;
     
     timer->stop();
+
+    if (!emPausa) {
+        tempoDecorrido += elapsedTimer->elapsed() / 1000;
+    }
     
     blocoAtual.fim = QDateTime::currentDateTime();
     blocoAtual.duracaoSegundos = tempoDecorrido;
@@ -159,8 +164,8 @@ void BlocosPage::finalizarBloco()
 
 void BlocosPage::atualizarTimer()
 {
-    tempoDecorrido = elapsedTimer->elapsed() / 1000;
-    lblTimer->setText(formatarTempo(tempoDecorrido));
+    int total = tempoDecorrido + (elapsedTimer->elapsed() / 1000);
+    lblTimer->setText(formatarTempo(total));
 }
 
 QString BlocosPage::formatarTempo(int segundos)

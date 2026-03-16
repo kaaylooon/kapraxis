@@ -5,7 +5,6 @@
 
 class QListWidget;
 class QStackedWidget;
-
 class AppWindow : public QMainWindow
 {
     Q_OBJECT

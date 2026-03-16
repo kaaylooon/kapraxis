@@ -236,6 +236,10 @@ void AppWindow::carregarEstiloGlobal() {
             outline: none;
         }
 
+        QListWidget#lista::item {
+            padding: 10px 12px;
+        }
+
         QListWidget#lista::item:selected:!active {
             background-color: #3e3e3e;
             color: white;
@@ -279,6 +283,7 @@ void AppWindow::carregarEstiloGlobal() {
         QLabel#lblData{
             color: #666; font-size: 12px;
         }
+
         
         QPushButton#btnAdd:hover {
             background-color: #535353;
@@ -302,6 +307,44 @@ void AppWindow::carregarEstiloGlobal() {
 
         QWidget#buttonContainer{
             background-color: #2a2a2a;
+        }
+
+        /* ===== COMBOBOX (MATCH BUTTONS) ===== */
+        QComboBox#comboFilterTag {
+            background-color: #3e3e3e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-weight: 500;
+            font-size: 13px;
+            min-width: 140px;
+        }
+
+        QComboBox#comboFilterTag:hover {
+            background-color: #535353;
+        }
+
+        QComboBox#comboFilterTag::drop-down {
+            border: none;
+            width: 24px;
+        }
+
+        QComboBox#comboFilterTag::down-arrow {
+            image: none;
+            border: none;
+        }
+
+        /* ===== CARD TEXT ===== */
+        QLabel#cardTitle {
+            color: #e0e0e0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        QLabel#cardSubtitle {
+            color: #bdbdbd;
+            font-size: 13px;
         }
     )";
     

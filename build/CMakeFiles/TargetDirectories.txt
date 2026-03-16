@@ -1,0 +1,4 @@
+/home/kaylon/Projects/kapraxis/build/CMakeFiles/kapraxis.dir
+/home/kaylon/Projects/kapraxis/build/CMakeFiles/edit_cache.dir
+/home/kaylon/Projects/kapraxis/build/CMakeFiles/rebuild_cache.dir
+/home/kaylon/Projects/kapraxis/build/CMakeFiles/kapraxis_autogen.dir

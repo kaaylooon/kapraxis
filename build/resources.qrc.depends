@@ -1,0 +1,23 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/">
+    <file>resources/icons/house.svg</file>  <!-- CORRETO -->
+    <file>resources/icons/house-fill.svg</file>
+    <file>resources/icons/book.svg</file>
+    <file>resources/icons/book-fill.svg</file>
+    <file>resources/icons/bookmark.svg</file>
+    <file>resources/icons/bookmark-fill.svg</file>
+    <file>resources/icons/calendar.svg</file>
+    <file>resources/icons/calendar-fill.svg</file>
+    <file>resources/icons/dash.svg</file>
+    <file>resources/icons/list-ul.svg</file>
+    <file>resources/icons/patch-plus.svg</file>
+    <file>resources/icons/patch-plus-fill.svg</file>
+    <file>resources/icons/plus.svg</file>
+    <file>resources/icons/quote.svg</file>
+    <file>resources/icons/stopwatch.svg</file>
+    <file>resources/icons/stopwatch-fill.svg</file>
+    <file>resources/icons/view-list.svg</file>
+    <file>resources/icons/x.svg</file>
+    <file>resources/styles/global.qss</file>
+</qresource>
+</RCC>
