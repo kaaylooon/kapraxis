@@ -48,6 +48,7 @@ private:
     void recarregar();
     void setupShortcuts();
     void destacarItem(QListWidgetItem* item);
+    void adicionarItemLista(const Questao& q);
     bool abrirDialogQuestao(Questao& ioQuestao,
                             const QString& titulo,
                             const QString& header,

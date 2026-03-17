@@ -55,7 +55,7 @@ QuestoesPage::QuestoesPage(QWidget* parent)
 
     autoSaveTimer = new QTimer(this);
     autoSaveTimer->setSingleShot(true);
-    autoSaveTimer->setInterval(700);
+    autoSaveTimer->setInterval(1000);
 
     
     auto* filterGroup = new QGroupBox();
@@ -93,9 +93,12 @@ QuestoesPage::QuestoesPage(QWidget* parent)
     lista->setViewMode(QListView::ListMode);
     lista->setResizeMode(QListView::Adjust);
     //lista->setGridSize(QSize(200, 150));
-    lista->setSpacing(6);
+    lista->setSpacing(8);
     lista->setWordWrap(true);
     lista->setUniformItemSizes(false);
+    lista->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    lista->setContentsMargins(0, 0, 0, 0);
+    lista->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     lista->setDropIndicatorShown(false);
     
     listPanelLayout->addWidget(lista);
@@ -124,19 +127,20 @@ QuestoesPage::QuestoesPage(QWidget* parent)
     auto* infoLayout = new QHBoxLayout(infoGroup);
     lblTags = new QLabel("Sem tags");
     lblTags->setTextFormat(Qt::RichText);
-    lblData = new QLabel("--/--/----");
+    lblData = new QLabel("--/--/-lblData---");
     lblData->setObjectName("lblData");
     
     lblInfo = new QLabel(""); 
+    lblInfo->setObjectName("lblData");
     
     infoLayout->addWidget(lblTags);
     infoLayout->addStretch();
     infoLayout->addWidget(lblData);
+    infoLayout->addWidget(lblInfo);
     
     detailsPanelLayout->addWidget(enunciadoGroup);
     detailsPanelLayout->addWidget(respostaGroup);
     detailsPanelLayout->addStretch();
-    detailsPanelLayout->addWidget(lblInfo);
     detailsPanelLayout->addWidget(infoGroup);
     
     contentLayout->addWidget(listPanelGroup, 3);
@@ -244,7 +248,7 @@ void QuestoesPage::salvarResposta() {
         item->setData(Qt::UserRole + 2, temResposta);
         
         // Feedback sutil
-        lblInfo->setText("✓ Salvo em " + QTime::currentTime().toString("hh:mm:ss"));
+        lblInfo->setText("+ " + QTime::currentTime().toString("hh:mm:ss"));
     }
 }
 
@@ -278,17 +282,7 @@ void QuestoesPage::buscarQuestoes(const QString& texto) {
         if (q.enunciado.contains(texto, Qt::CaseInsensitive) ||
             q.resposta.contains(texto, Qt::CaseInsensitive) ||
             q.tags.join(" ").contains(texto, Qt::CaseInsensitive)) {
-            
-            QString status = q.resposta.isEmpty() ? "⏳" : "✅";
-            QString preview = q.enunciado.left(100);
-            if (q.enunciado.length() > 100) preview += "...";
-            
-            QString cardText = QString("%1 %2").arg(status).arg(preview);
-            auto* item = new QListWidgetItem(cardText, lista);
-            item->setData(Qt::UserRole, q.id);
-            item->setData(Qt::UserRole + 1, q.enunciado);
-            item->setData(Qt::UserRole + 2, !q.resposta.isEmpty());
-            item->setTextAlignment(Qt::AlignCenter);
+            adicionarItemLista(q);
         }
     }
 }
@@ -376,55 +370,75 @@ void QuestoesPage::recarregar() {
     }
     
     for (auto& q : questoesFiltradas) {
-        auto* item = new QListWidgetItem(lista);
-
-        item->setData(Qt::UserRole, q.id);
-        item->setData(Qt::UserRole + 1, q.enunciado);
-        item->setData(Qt::UserRole + 2, q.tags);
-        item->setData(Qt::UserRole + 3, !q.resposta.trimmed().isEmpty());
-        
-        const QString enunciadoPreview = q.enunciado.left(180) + (q.enunciado.length() > 180 ? "..." : "");
-        const QString respostaPreview = q.resposta.trimmed().isEmpty()
-            ? "Sem resposta"
-            : q.resposta.left(140) + (q.resposta.length() > 140 ? "..." : "");
-
-        auto* card = new QWidget();
-        auto* cardLayout = new QVBoxLayout(card);
-        cardLayout->setContentsMargins(12, 10, 12, 10);
-        cardLayout->setSpacing(6);
-
-        auto* lblTitulo = new QLabel(enunciadoPreview);
-        lblTitulo->setObjectName("cardTitle");
-        lblTitulo->setWordWrap(true);
-
-        auto* lblRespostaPreview = new QLabel(respostaPreview);
-        lblRespostaPreview->setObjectName("cardSubtitle");
-        lblRespostaPreview->setWordWrap(true);
-
-        auto* bottomRow = new QHBoxLayout();
-        auto* lblTagsCard = new QLabel(buildTagsHtml(q.tags));
-        lblTagsCard->setTextFormat(Qt::RichText);
-        lblTagsCard->setWordWrap(true);
-
-        auto* lblDataCard = new QLabel(q.criadaEm.toString("dd/MM/yyyy"));
-        lblDataCard->setObjectName("lblData");
-
-        bottomRow->addWidget(lblTagsCard, 1);
-        bottomRow->addStretch();
-        bottomRow->addWidget(lblDataCard, 0, Qt::AlignRight);
-
-        cardLayout->addWidget(lblTitulo);
-        cardLayout->addWidget(lblRespostaPreview);
-        cardLayout->addLayout(bottomRow);
-
-        item->setSizeHint(card->sizeHint());
-        lista->addItem(item);
-        lista->setItemWidget(item, card);
+        adicionarItemLista(q);
     }
 
     if (lista->count() == 0) {
         detailsPanelGroup->setVisible(false);
     }
+}
+
+void QuestoesPage::adicionarItemLista(const Questao& q) {
+    auto* item = new QListWidgetItem(lista);
+
+    item->setData(Qt::UserRole, q.id);
+    item->setData(Qt::UserRole + 1, q.enunciado);
+    item->setData(Qt::UserRole + 2, q.tags);
+    item->setData(Qt::UserRole + 3, !q.resposta.trimmed().isEmpty());
+
+    const QString enunciadoPreview = q.enunciado;
+    const QString respostaPreview = q.resposta.trimmed().isEmpty()
+        ? "Sem resposta"
+        : q.resposta;
+
+    auto* card = new QWidget();
+    card->setObjectName("listaCard");
+    card->setAttribute(Qt::WA_StyledBackground, true);
+    auto* cardLayout = new QVBoxLayout(card);
+    cardLayout->setContentsMargins(15, 15, 15, 15);
+    cardLayout->setSpacing(8);
+    card->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+    auto* lblTitulo = new QLabel(enunciadoPreview);
+    lblTitulo->setObjectName("cardTitle");
+    lblTitulo->setWordWrap(true);
+    lblTitulo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    lblTitulo->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    lblTitulo->setContentsMargins(0, 0, 0, 0);
+
+    auto* lblRespostaPreview = new QLabel(respostaPreview);
+    lblRespostaPreview->setObjectName("cardSubtitle");
+    lblRespostaPreview->setWordWrap(true);
+    lblRespostaPreview->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    lblRespostaPreview->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    lblRespostaPreview->setContentsMargins(0, 0, 0, 2);
+
+    auto* bottomRow = new QHBoxLayout();
+    bottomRow->setContentsMargins(0, 2, 0, 0);
+    bottomRow->setSpacing(1);
+    auto* lblTagsCard = new QLabel(buildTagsHtml(q.tags));
+    lblTagsCard->setTextFormat(Qt::RichText);
+    lblTagsCard->setWordWrap(true);
+    lblTagsCard->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    lblTagsCard->setContentsMargins(0, 0, 0, 0);
+    lblTagsCard->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
+    auto* lblDataCard = new QLabel(q.criadaEm.toString("dd/MM/yyyy"));
+    lblDataCard->setObjectName("lblData");
+
+    bottomRow->addWidget(lblTagsCard, 1);
+    bottomRow->addStretch();
+    bottomRow->addWidget(lblDataCard, 0, Qt::AlignRight);
+
+    cardLayout->addWidget(lblTitulo);
+    cardLayout->addWidget(lblRespostaPreview);
+    cardLayout->addLayout(bottomRow);
+
+    card->adjustSize();
+    const QSize hint = card->sizeHint();
+    item->setSizeHint(hint);
+    lista->addItem(item);
+    lista->setItemWidget(item, card);
 }
 
 bool QuestoesPage::abrirDialogQuestao(Questao& ioQuestao,

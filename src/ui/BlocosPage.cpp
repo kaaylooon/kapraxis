@@ -11,6 +11,7 @@
 #include <QFormLayout>
 #include <QMessageBox>
 #include <QDateTime>
+#include "../repo/StudyStatsStore.h"
 
 BlocosPage::BlocosPage(QWidget* parent)
     : QWidget(parent)
@@ -135,6 +136,10 @@ void BlocosPage::finalizarBloco()
     
     blocoAtual.fim = QDateTime::currentDateTime();
     blocoAtual.duracaoSegundos = tempoDecorrido;
+
+    if (blocoAtual.duracaoSegundos > 0) {
+        registrarTempoEstudo(blocoAtual.fim, blocoAtual.duracaoSegundos);
+    }
     
     historico.append(blocoAtual);
     
@@ -182,6 +187,13 @@ QString BlocosPage::formatarTempo(int segundos)
 int BlocosPage::calcularTempoEfetivo(const BlocoEstudo& bloco)
 {
     return bloco.duracaoSegundos;
+}
+
+void BlocosPage::registrarTempoEstudo(const QDateTime& fim, int segundos)
+{
+    if (segundos <= 0) return;
+    StudyStatsStore::addSeconds(fim.date(), blocoAtual.disciplina, segundos);
+    emit studyStatsUpdated();
 }
 
 void BlocosPage::carregarHistorico()

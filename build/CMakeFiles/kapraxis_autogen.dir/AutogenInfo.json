@@ -204,6 +204,12 @@
 			null
 		],
 		[
+			"/home/kaylon/Projects/kapraxis/src/repo/StudyStatsStore.h",
+			"MU",
+			"TQ5VY7ACGB/moc_StudyStatsStore.cpp",
+			null
+		],
+		[
 			"/home/kaylon/Projects/kapraxis/src/ui/BlocosPage.h",
 			"MU",
 			"YPKJ5OE7LN/moc_BlocosPage.cpp",
@@ -292,6 +298,11 @@
 		[ "/home/kaylon/Projects/kapraxis/src/main.cpp", "MU", null ],
 		[
 			"/home/kaylon/Projects/kapraxis/src/repo/QuestaoRepoSQLite.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/kaylon/Projects/kapraxis/src/repo/StudyStatsStore.cpp",
 			"MU",
 			null
 		],

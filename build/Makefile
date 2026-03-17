@@ -262,6 +262,30 @@ src/repo/QuestaoRepoSQLite.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kapraxis.dir/build.make CMakeFiles/kapraxis.dir/src/repo/QuestaoRepoSQLite.cpp.s
 .PHONY : src/repo/QuestaoRepoSQLite.cpp.s
 
+src/repo/StudyStatsStore.o: src/repo/StudyStatsStore.cpp.o
+.PHONY : src/repo/StudyStatsStore.o
+
+# target to build an object file
+src/repo/StudyStatsStore.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kapraxis.dir/build.make CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.o
+.PHONY : src/repo/StudyStatsStore.cpp.o
+
+src/repo/StudyStatsStore.i: src/repo/StudyStatsStore.cpp.i
+.PHONY : src/repo/StudyStatsStore.i
+
+# target to preprocess a source file
+src/repo/StudyStatsStore.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kapraxis.dir/build.make CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.i
+.PHONY : src/repo/StudyStatsStore.cpp.i
+
+src/repo/StudyStatsStore.s: src/repo/StudyStatsStore.cpp.s
+.PHONY : src/repo/StudyStatsStore.s
+
+# target to generate assembly for a file
+src/repo/StudyStatsStore.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kapraxis.dir/build.make CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.s
+.PHONY : src/repo/StudyStatsStore.cpp.s
+
 src/ui/BlocosPage.o: src/ui/BlocosPage.cpp.o
 .PHONY : src/ui/BlocosPage.o
 
@@ -359,6 +383,9 @@ help:
 	@echo "... src/repo/QuestaoRepoSQLite.o"
 	@echo "... src/repo/QuestaoRepoSQLite.i"
 	@echo "... src/repo/QuestaoRepoSQLite.s"
+	@echo "... src/repo/StudyStatsStore.o"
+	@echo "... src/repo/StudyStatsStore.i"
+	@echo "... src/repo/StudyStatsStore.s"
 	@echo "... src/ui/BlocosPage.o"
 	@echo "... src/ui/BlocosPage.i"
 	@echo "... src/ui/BlocosPage.s"

@@ -33,6 +33,9 @@ class BlocosPage : public QWidget
 
 public:
     explicit BlocosPage(QWidget* parent = nullptr);
+
+signals:
+    void studyStatsUpdated();
     
 private slots:
     void iniciarBloco();
@@ -64,6 +67,7 @@ private:
     
     QString formatarTempo(int segundos);
     int calcularTempoEfetivo(const BlocoEstudo& bloco);
+    void registrarTempoEstudo(const QDateTime& fim, int segundos);
 };
 
 #endif // BLOCOSPAGE_H

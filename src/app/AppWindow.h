@@ -5,6 +5,8 @@
 
 class QListWidget;
 class QStackedWidget;
+class InicioPage;
+class BlocosPage;
 class AppWindow : public QMainWindow
 {
     Q_OBJECT
@@ -17,6 +19,8 @@ private:
 private:
     QListWidget* sidebar;
     QStackedWidget* pages;
+    InicioPage* inicioPage;
+    BlocosPage* blocosPage;
 };
 
 #endif

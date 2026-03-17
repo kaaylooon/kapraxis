@@ -122,10 +122,24 @@ CMakeFiles/kapraxis.dir/src/repo/QuestaoRepoSQLite.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/kapraxis.dir/src/repo/QuestaoRepoSQLite.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kaylon/Projects/kapraxis/src/repo/QuestaoRepoSQLite.cpp -o CMakeFiles/kapraxis.dir/src/repo/QuestaoRepoSQLite.cpp.s
 
+CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.o: CMakeFiles/kapraxis.dir/flags.make
+CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.o: /home/kaylon/Projects/kapraxis/src/repo/StudyStatsStore.cpp
+CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.o: CMakeFiles/kapraxis.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kaylon/Projects/kapraxis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.o -MF CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.o.d -o CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.o -c /home/kaylon/Projects/kapraxis/src/repo/StudyStatsStore.cpp
+
+CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kaylon/Projects/kapraxis/src/repo/StudyStatsStore.cpp > CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.i
+
+CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kaylon/Projects/kapraxis/src/repo/StudyStatsStore.cpp -o CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.s
+
 CMakeFiles/kapraxis.dir/src/main.cpp.o: CMakeFiles/kapraxis.dir/flags.make
 CMakeFiles/kapraxis.dir/src/main.cpp.o: /home/kaylon/Projects/kapraxis/src/main.cpp
 CMakeFiles/kapraxis.dir/src/main.cpp.o: CMakeFiles/kapraxis.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kaylon/Projects/kapraxis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/kapraxis.dir/src/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kaylon/Projects/kapraxis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/kapraxis.dir/src/main.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kapraxis.dir/src/main.cpp.o -MF CMakeFiles/kapraxis.dir/src/main.cpp.o.d -o CMakeFiles/kapraxis.dir/src/main.cpp.o -c /home/kaylon/Projects/kapraxis/src/main.cpp
 
 CMakeFiles/kapraxis.dir/src/main.cpp.i: cmake_force
@@ -139,7 +153,7 @@ CMakeFiles/kapraxis.dir/src/main.cpp.s: cmake_force
 CMakeFiles/kapraxis.dir/src/app/AppWindow.cpp.o: CMakeFiles/kapraxis.dir/flags.make
 CMakeFiles/kapraxis.dir/src/app/AppWindow.cpp.o: /home/kaylon/Projects/kapraxis/src/app/AppWindow.cpp
 CMakeFiles/kapraxis.dir/src/app/AppWindow.cpp.o: CMakeFiles/kapraxis.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kaylon/Projects/kapraxis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/kapraxis.dir/src/app/AppWindow.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kaylon/Projects/kapraxis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/kapraxis.dir/src/app/AppWindow.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kapraxis.dir/src/app/AppWindow.cpp.o -MF CMakeFiles/kapraxis.dir/src/app/AppWindow.cpp.o.d -o CMakeFiles/kapraxis.dir/src/app/AppWindow.cpp.o -c /home/kaylon/Projects/kapraxis/src/app/AppWindow.cpp
 
 CMakeFiles/kapraxis.dir/src/app/AppWindow.cpp.i: cmake_force
@@ -153,7 +167,7 @@ CMakeFiles/kapraxis.dir/src/app/AppWindow.cpp.s: cmake_force
 CMakeFiles/kapraxis.dir/src/ui/QuestoesPage.cpp.o: CMakeFiles/kapraxis.dir/flags.make
 CMakeFiles/kapraxis.dir/src/ui/QuestoesPage.cpp.o: /home/kaylon/Projects/kapraxis/src/ui/QuestoesPage.cpp
 CMakeFiles/kapraxis.dir/src/ui/QuestoesPage.cpp.o: CMakeFiles/kapraxis.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kaylon/Projects/kapraxis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/kapraxis.dir/src/ui/QuestoesPage.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kaylon/Projects/kapraxis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/kapraxis.dir/src/ui/QuestoesPage.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kapraxis.dir/src/ui/QuestoesPage.cpp.o -MF CMakeFiles/kapraxis.dir/src/ui/QuestoesPage.cpp.o.d -o CMakeFiles/kapraxis.dir/src/ui/QuestoesPage.cpp.o -c /home/kaylon/Projects/kapraxis/src/ui/QuestoesPage.cpp
 
 CMakeFiles/kapraxis.dir/src/ui/QuestoesPage.cpp.i: cmake_force
@@ -167,7 +181,7 @@ CMakeFiles/kapraxis.dir/src/ui/QuestoesPage.cpp.s: cmake_force
 CMakeFiles/kapraxis.dir/src/ui/InicioPage.cpp.o: CMakeFiles/kapraxis.dir/flags.make
 CMakeFiles/kapraxis.dir/src/ui/InicioPage.cpp.o: /home/kaylon/Projects/kapraxis/src/ui/InicioPage.cpp
 CMakeFiles/kapraxis.dir/src/ui/InicioPage.cpp.o: CMakeFiles/kapraxis.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kaylon/Projects/kapraxis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/kapraxis.dir/src/ui/InicioPage.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kaylon/Projects/kapraxis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/kapraxis.dir/src/ui/InicioPage.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kapraxis.dir/src/ui/InicioPage.cpp.o -MF CMakeFiles/kapraxis.dir/src/ui/InicioPage.cpp.o.d -o CMakeFiles/kapraxis.dir/src/ui/InicioPage.cpp.o -c /home/kaylon/Projects/kapraxis/src/ui/InicioPage.cpp
 
 CMakeFiles/kapraxis.dir/src/ui/InicioPage.cpp.i: cmake_force
@@ -181,7 +195,7 @@ CMakeFiles/kapraxis.dir/src/ui/InicioPage.cpp.s: cmake_force
 CMakeFiles/kapraxis.dir/src/ui/BlocosPage.cpp.o: CMakeFiles/kapraxis.dir/flags.make
 CMakeFiles/kapraxis.dir/src/ui/BlocosPage.cpp.o: /home/kaylon/Projects/kapraxis/src/ui/BlocosPage.cpp
 CMakeFiles/kapraxis.dir/src/ui/BlocosPage.cpp.o: CMakeFiles/kapraxis.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kaylon/Projects/kapraxis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/kapraxis.dir/src/ui/BlocosPage.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kaylon/Projects/kapraxis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/kapraxis.dir/src/ui/BlocosPage.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kapraxis.dir/src/ui/BlocosPage.cpp.o -MF CMakeFiles/kapraxis.dir/src/ui/BlocosPage.cpp.o.d -o CMakeFiles/kapraxis.dir/src/ui/BlocosPage.cpp.o -c /home/kaylon/Projects/kapraxis/src/ui/BlocosPage.cpp
 
 CMakeFiles/kapraxis.dir/src/ui/BlocosPage.cpp.i: cmake_force
@@ -195,7 +209,7 @@ CMakeFiles/kapraxis.dir/src/ui/BlocosPage.cpp.s: cmake_force
 CMakeFiles/kapraxis.dir/qrc_resources.cpp.o: CMakeFiles/kapraxis.dir/flags.make
 CMakeFiles/kapraxis.dir/qrc_resources.cpp.o: qrc_resources.cpp
 CMakeFiles/kapraxis.dir/qrc_resources.cpp.o: CMakeFiles/kapraxis.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kaylon/Projects/kapraxis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/kapraxis.dir/qrc_resources.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kaylon/Projects/kapraxis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/kapraxis.dir/qrc_resources.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kapraxis.dir/qrc_resources.cpp.o -MF CMakeFiles/kapraxis.dir/qrc_resources.cpp.o.d -o CMakeFiles/kapraxis.dir/qrc_resources.cpp.o -c /home/kaylon/Projects/kapraxis/build/qrc_resources.cpp
 
 CMakeFiles/kapraxis.dir/qrc_resources.cpp.i: cmake_force
@@ -210,6 +224,7 @@ CMakeFiles/kapraxis.dir/qrc_resources.cpp.s: cmake_force
 kapraxis_OBJECTS = \
 "CMakeFiles/kapraxis.dir/kapraxis_autogen/mocs_compilation.cpp.o" \
 "CMakeFiles/kapraxis.dir/src/repo/QuestaoRepoSQLite.cpp.o" \
+"CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.o" \
 "CMakeFiles/kapraxis.dir/src/main.cpp.o" \
 "CMakeFiles/kapraxis.dir/src/app/AppWindow.cpp.o" \
 "CMakeFiles/kapraxis.dir/src/ui/QuestoesPage.cpp.o" \
@@ -222,6 +237,7 @@ kapraxis_EXTERNAL_OBJECTS =
 
 kapraxis: CMakeFiles/kapraxis.dir/kapraxis_autogen/mocs_compilation.cpp.o
 kapraxis: CMakeFiles/kapraxis.dir/src/repo/QuestaoRepoSQLite.cpp.o
+kapraxis: CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.o
 kapraxis: CMakeFiles/kapraxis.dir/src/main.cpp.o
 kapraxis: CMakeFiles/kapraxis.dir/src/app/AppWindow.cpp.o
 kapraxis: CMakeFiles/kapraxis.dir/src/ui/QuestoesPage.cpp.o
@@ -236,7 +252,7 @@ kapraxis: /usr/lib/x86_64-linux-gnu/libGLX.so
 kapraxis: /usr/lib/x86_64-linux-gnu/libOpenGL.so
 kapraxis: /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.4.2
 kapraxis: CMakeFiles/kapraxis.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/kaylon/Projects/kapraxis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX executable kapraxis"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/kaylon/Projects/kapraxis/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable kapraxis"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/kapraxis.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

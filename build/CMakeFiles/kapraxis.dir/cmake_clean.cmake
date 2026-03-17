@@ -12,6 +12,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/kapraxis.dir/src/main.cpp.o.d"
   "CMakeFiles/kapraxis.dir/src/repo/QuestaoRepoSQLite.cpp.o"
   "CMakeFiles/kapraxis.dir/src/repo/QuestaoRepoSQLite.cpp.o.d"
+  "CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.o"
+  "CMakeFiles/kapraxis.dir/src/repo/StudyStatsStore.cpp.o.d"
   "CMakeFiles/kapraxis.dir/src/ui/BlocosPage.cpp.o"
   "CMakeFiles/kapraxis.dir/src/ui/BlocosPage.cpp.o.d"
   "CMakeFiles/kapraxis.dir/src/ui/InicioPage.cpp.o"
