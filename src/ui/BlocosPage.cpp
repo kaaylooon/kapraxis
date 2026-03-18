@@ -1,4 +1,3 @@
-// BlocosPage.cpp
 #include "BlocosPage.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -11,6 +10,7 @@
 #include <QFormLayout>
 #include <QMessageBox>
 #include <QDateTime>
+
 #include "../repo/StudyStatsStore.h"
 
 BlocosPage::BlocosPage(QWidget* parent)

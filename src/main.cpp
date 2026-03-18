@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QCoreApplication>
+
 #include "app/AppWindow.h"
 
 int main(int argc, char *argv[]) {
@@ -9,7 +10,7 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setApplicationName("Kapraxis");
 
     AppWindow window;
-    window.resize(1280, 720);
+    window.showMaximized();
     window.show();
 
     return app.exec();

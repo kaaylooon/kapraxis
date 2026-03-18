@@ -1,8 +1,8 @@
-#pragma once
-#ifndef QUESTOESPAGE_H
-#define QUESTOESPAGE_H
+#ifndef KAPRAXIS_UI_QUESTOESPAGE_H_
+#define KAPRAXIS_UI_QUESTOESPAGE_H_
 
 #include <QWidget>
+#include <QList>
 #include <QListWidget>
 #include <QPushButton>
 #include <QLabel>
@@ -12,14 +12,22 @@
 #include <QComboBox>
 #include <QShortcut>
 #include <QTimer>
+#include <QString>
+#include <QStringList>
+
 #include "../domain/Questao.h"
+
+namespace kapraxis {
+namespace repo {
+class QuestaoRepoSQLite;
+}
+}
 
 class QListWidget;
 class QLabel;
 class QTextEdit;
 class ClipboardTextEdit;
 class QPushButton;
-class QuestaoRepoSQLite;
 class QFrame;
 class QGroupBox;
 class QStackedWidget;
@@ -65,7 +73,7 @@ private:
                             const QString& titulo,
                             const QString& header,
                             const QString& actionLabel);
-    QuestaoRepoSQLite* repo;
+    kapraxis::repo::QuestaoRepoSQLite* repo;
 
     QListWidget* lista;
     QPushButton* btnAdd;
@@ -120,4 +128,4 @@ private:
     bool forceNextLoad = false;
 };
 
-#endif
+#endif  // KAPRAXIS_UI_QUESTOESPAGE_H_

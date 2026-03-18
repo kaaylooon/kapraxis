@@ -1,4 +1,5 @@
-#pragma once
+#ifndef KAPRAXIS_REPO_STUDYSTATSSTORE_H_
+#define KAPRAXIS_REPO_STUDYSTATSSTORE_H_
 
 #include <QDate>
 #include <QMap>
@@ -14,3 +15,5 @@ private:
     static QString filePath();
     static void saveDailySeconds(const QMap<QString, QMap<QString, int>>& map);
 };
+
+#endif  // KAPRAXIS_REPO_STUDYSTATSSTORE_H_

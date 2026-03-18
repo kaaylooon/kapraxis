@@ -1,4 +1,3 @@
-// RevisaoPage.cpp
 #include "RevisaoPage.h"
 
 #include <QVBoxLayout>

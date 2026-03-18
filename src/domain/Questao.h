@@ -1,7 +1,9 @@
-#pragma once
+#ifndef KAPRAXIS_DOMAIN_QUESTAO_H_
+#define KAPRAXIS_DOMAIN_QUESTAO_H_
+
+#include <QDateTime>
 #include <QString>
 #include <QStringList>
-#include <QDateTime>
 
 struct Questao {
     Questao() : id(0) {}
@@ -13,3 +15,5 @@ struct Questao {
     QStringList respostaImagens;
     QDateTime criadaEm;
 };
+
+#endif  // KAPRAXIS_DOMAIN_QUESTAO_H_

@@ -1,5 +1,7 @@
-#pragma once
+#ifndef KAPRAXIS_UI_SETTINGSPAGE_H_
+#define KAPRAXIS_UI_SETTINGSPAGE_H_
 
+#include <QString>
 #include <QWidget>
 
 class QButtonGroup;
@@ -24,3 +26,5 @@ private:
     QButtonGroup* themeGroup;
     QLabel* lblInfo;
 };
+
+#endif  // KAPRAXIS_UI_SETTINGSPAGE_H_

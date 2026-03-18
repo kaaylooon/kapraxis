@@ -1,10 +1,13 @@
-#ifndef BLOCOSPAGE_H
-#define BLOCOSPAGE_H
+#ifndef KAPRAXIS_UI_BLOCOSPAGE_H_
+#define KAPRAXIS_UI_BLOCOSPAGE_H_
 
-#include <QWidget>
-#include <QTimer>
-#include <QElapsedTimer>
 #include <QDateTime>
+#include <QElapsedTimer>
+#include <QList>
+#include <QPair>
+#include <QString>
+#include <QTimer>
+#include <QWidget>
 
 // Forward declarations
 class QLabel;
@@ -70,4 +73,4 @@ private:
     void registrarTempoEstudo(const QDateTime& fim, int segundos);
 };
 
-#endif // BLOCOSPAGE_H
+#endif  // KAPRAXIS_UI_BLOCOSPAGE_H_

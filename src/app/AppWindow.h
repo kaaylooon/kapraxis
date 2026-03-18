@@ -1,7 +1,9 @@
-#ifndef APPWINDOW_H
-#define APPWINDOW_H
+#ifndef KAPRAXIS_APP_APPWINDOW_H_
+#define KAPRAXIS_APP_APPWINDOW_H_
 
 #include <QMainWindow>
+#include <QString>
+#include <QVector>
 
 class QListWidget;
 class QStackedWidget;
@@ -35,4 +37,4 @@ private:
     QVector<QListWidgetItem*> pageItems;
 };
 
-#endif
+#endif  // KAPRAXIS_APP_APPWINDOW_H_

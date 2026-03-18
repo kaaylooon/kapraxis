@@ -1,4 +1,3 @@
-// QuestoesPage.cpp
 #include "QuestoesPage.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -43,9 +42,11 @@
 #include <QColor>
 #include <QImageReader>
 
-#include "../repo/QuestaoRepoSQLite.h"
+#include "../repo/questao_repo_sqlite.h"
 #include "../utils/ImageStore.h"
 #include "ClipboardTextEdit.h"
+
+namespace krepo = kapraxis::repo;
 
 static QString tagChipStyle(const QString& tag) {
     const uint h = qHash(tag.toLower());
@@ -259,7 +260,7 @@ static QStringList coletarPaths(QListWidget* list) {
 QuestoesPage::QuestoesPage(QWidget* parent)
     : QWidget(parent)
 {
-    repo = new QuestaoRepoSQLite;
+    repo = new krepo::QuestaoRepoSQLite;
     
     setupShortcuts();
 
@@ -495,7 +496,7 @@ QuestoesPage::QuestoesPage(QWidget* parent)
     connect(btnCampoAdicional, &QPushButton::clicked, [this]() {
         if (!lista->currentItem()) return;
         const int id = lista->currentItem()->data(Qt::UserRole).toInt();
-        Questao q = repo->buscarPorId(id);
+        Questao q = repo->BuscarPorId(id);
         if (q.id == 0) return;
 
         if (respostaGroup->isVisible()) {
@@ -510,7 +511,7 @@ QuestoesPage::QuestoesPage(QWidget* parent)
             }
             q.resposta.clear();
             q.respostaImagens.clear();
-            repo->atualizar(q);
+            repo->Atualizar(q);
             txtResposta->clear();
             detalheRespostaPaths.clear();
             renderImageListFullWidth(scrollImagensResposta, respostaImagesLayout, detalheRespostaPaths);
@@ -535,7 +536,7 @@ QuestoesPage::QuestoesPage(QWidget* parent)
             return;
         }
         const int id = item->data(Qt::UserRole).toInt();
-        Questao q = repo->buscarPorId(id);
+        Questao q = repo->BuscarPorId(id);
         if (q.id == 0) {
             return;
         }
@@ -548,7 +549,7 @@ QuestoesPage::QuestoesPage(QWidget* parent)
                 btnCampoAdicional->setText("Remover campo adicional");
             }
         }
-        repo->atualizar(q);
+        repo->Atualizar(q);
         detalheEnunciadoPaths = q.enunciadoImagens;
         detalheRespostaPaths = q.respostaImagens;
         renderImageListFullWidth(scrollImagensEnunciado, enunciadoImagesLayout, detalheEnunciadoPaths);
@@ -575,8 +576,8 @@ void QuestoesPage::adicionarQuestao() {
         return;
     }
     
-    repo->salvar(q);
-    QuestaoRepoSQLite::invalidarCacheBasico();
+    repo->Salvar(q);
+    krepo::QuestaoRepoSQLite::InvalidarCacheBasico();
     recarregar();
 }
 
@@ -605,11 +606,11 @@ void QuestoesPage::salvarResposta() {
     if (!respostaGroup->isVisible()) return;
     
     int id = item->data(Qt::UserRole).toInt();
-    Questao q = repo->buscarPorId(id);
+    Questao q = repo->BuscarPorId(id);
     
     if (q.id != 0) {
         q.resposta = txtResposta->toPlainText();
-        repo->atualizar(q);
+        repo->Atualizar(q);
         
         // Atualiza indicador visual na lista
         bool temResposta = !q.resposta.isEmpty();
@@ -650,7 +651,7 @@ void QuestoesPage::buscarQuestoes(const QString& texto) {
     renderIndex = 0;
     renderGroupMode.clear();
     renderCurrentGroup.clear();
-    const auto todasQuestoes = repo->listarBasicoCached();
+    const auto todasQuestoes = repo->ListarBasicoCached();
     
     for (const auto& q : todasQuestoes) {
         if (q.enunciado.contains(texto, Qt::CaseInsensitive) ||
@@ -669,7 +670,7 @@ void QuestoesPage::editarQuestao() {
 
     int id = item->data(Qt::UserRole).toInt();
     
-    Questao questao = repo->buscarPorId(id);
+    Questao questao = repo->BuscarPorId(id);
 
     if (questao.id == 0) return; 
 
@@ -677,8 +678,8 @@ void QuestoesPage::editarQuestao() {
         return;
     }
 
-    repo->atualizar(questao);
-    QuestaoRepoSQLite::invalidarCacheBasico();
+    repo->Atualizar(questao);
+    krepo::QuestaoRepoSQLite::InvalidarCacheBasico();
     recarregar();
 }
 
@@ -694,8 +695,8 @@ void QuestoesPage::excluirQuestao() {
         QMessageBox::Yes | QMessageBox::No);
     
     if (resposta == QMessageBox::Yes) {
-        repo->excluir(id);
-        QuestaoRepoSQLite::invalidarCacheBasico();
+        repo->Excluir(id);
+        krepo::QuestaoRepoSQLite::InvalidarCacheBasico();
         recarregar();
     }
 }
@@ -707,7 +708,7 @@ void QuestoesPage::mostrarDetalhes(QListWidgetItem* item) {
     contentStack->setCurrentWidget(detailPage);
     
     int id = item->data(Qt::UserRole).toInt();
-    const Questao q = repo->buscarPorId(id);
+    const Questao q = repo->BuscarPorId(id);
     if (q.id == 0) return;
 
     txtEnunciado->setText(q.enunciado);
@@ -740,7 +741,7 @@ void QuestoesPage::recarregar() {
     renderIndex = 0;
     renderGroupMode.clear();
     renderCurrentGroup.clear();
-    const auto todasQuestoes = repo->listarBasicoCached();
+    const auto todasQuestoes = repo->ListarBasicoCached();
     QList<Questao> questoesFiltradas;
     
     QString filtro = comboFilterTag->currentData().toString();
@@ -794,8 +795,8 @@ void QuestoesPage::excluirTodasQuestoes() {
     if (resposta != QMessageBox::Yes) {
         return;
     }
-    repo->excluirTodas();
-    QuestaoRepoSQLite::invalidarCacheBasico();
+    repo->ExcluirTodas();
+    krepo::QuestaoRepoSQLite::InvalidarCacheBasico();
     recarregar();
     contentStack->setCurrentWidget(listPage);
 }
@@ -876,11 +877,11 @@ void QuestoesPage::importarKeepJson() {
             q.enunciado = q.criadaEm.toString("dd/MM/yyyy HH:mm");
         }
 
-        repo->salvar(q);
+        repo->Salvar(q);
         imported++;
     }
 
-    QuestaoRepoSQLite::invalidarCacheBasico();
+    krepo::QuestaoRepoSQLite::InvalidarCacheBasico();
     recarregar();
     QMessageBox::information(
         this,

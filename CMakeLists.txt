@@ -14,8 +14,8 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets Sql)
 qt6_add_resources(kapraxis_RESOURCES resources.qrc)
 
 add_executable(kapraxis
-    src/repo/QuestaoRepoSQLite.cpp
-    src/repo/QuestaoRepoSQLite.h
+    src/repo/questao_repo_sqlite.cpp
+    src/repo/questao_repo_sqlite.h
     src/repo/StudyStatsStore.cpp
     src/repo/StudyStatsStore.h
     src/main.cpp

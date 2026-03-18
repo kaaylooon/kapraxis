@@ -1,12 +1,14 @@
-#ifndef REVISAOPAGE_H
-#define REVISAOPAGE_H
+#ifndef KAPRAXIS_UI_REVISAOPAGE_H_
+#define KAPRAXIS_UI_REVISAOPAGE_H_
 
-#include <QWidget>
-#include <QTimer>
-#include <QElapsedTimer>
 #include <QDateTime>
+#include <QElapsedTimer>
+#include <QList>
+#include <QPair>
+#include <QString>
+#include <QTimer>
+#include <QWidget>
 
-// Forward declarations
 class QLabel;
 class QPushButton;
 class QComboBox;
@@ -48,7 +50,6 @@ private:
     bool blocoAtivo;
     bool emPausa;
     
-    // UI Components
     QLabel* lblTimer;
     QLabel* lblStatus;
     QPushButton* btnIniciar;
@@ -66,4 +67,4 @@ private:
     int calcularTempoEfetivo(const BlocoEstudo& bloco);
 };
 
-#endif // BLOCOSPAGE_H
+#endif  // KAPRAXIS_UI_REVISAOPAGE_H_

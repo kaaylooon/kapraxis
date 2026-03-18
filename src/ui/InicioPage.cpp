@@ -1,4 +1,3 @@
-// InicioPage.cpp
 #include "InicioPage.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -10,7 +9,7 @@
 #include <QPainter>
 #include <QStyleOption>
 
-#include "../repo/QuestaoRepoSQLite.h"
+#include "../repo/questao_repo_sqlite.h"
 #include "../repo/StudyStatsStore.h"
 
 namespace {
@@ -102,7 +101,7 @@ static QString formatDuration(int seconds) {
 InicioPage::InicioPage(QWidget* parent)
     : QWidget(parent)
 {
-    repo = new QuestaoRepoSQLite;
+    repo = new kapraxis::repo::QuestaoRepoSQLite;
 
     auto* rootLayout = new QVBoxLayout(this);
     rootLayout->setContentsMargins(24, 24, 24, 24);
@@ -180,7 +179,7 @@ void InicioPage::showEvent(QShowEvent* event)
 
 void InicioPage::atualizarResumo()
 {
-    const int totalQuestoes = repo->contar();
+    const int totalQuestoes = repo->Contar();
     lblTotalQuestoes->setText(QString::number(totalQuestoes));
 
     const QMap<QString, QMap<QString, int>> mapa = StudyStatsStore::loadDailySecondsByDiscipline();

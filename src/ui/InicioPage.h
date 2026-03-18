@@ -1,6 +1,5 @@
-// InicioPage.h
-#ifndef INICIOPAGE_H
-#define INICIOPAGE_H
+#ifndef KAPRAXIS_UI_INICIOPAGE_H_
+#define KAPRAXIS_UI_INICIOPAGE_H_
 
 #include <QWidget>
 #include <QLabel>
@@ -10,7 +9,11 @@ class QVBoxLayout;
 class QHBoxLayout;
 class QGroupBox;
 class QShowEvent;
+namespace kapraxis {
+namespace repo {
 class QuestaoRepoSQLite;
+}
+}
 
 class InicioPage : public QWidget
 {
@@ -25,10 +28,10 @@ public slots:
     void atualizarResumo();
 
 private:
-    QuestaoRepoSQLite* repo;
+    kapraxis::repo::QuestaoRepoSQLite* repo;
     QLabel* lblTotalQuestoes;
     QLabel* lblHorasEstudo;
     QWidget* chartWidget;
 };
 
-#endif
+#endif  // KAPRAXIS_UI_INICIOPAGE_H_

@@ -1,0 +1,6 @@
+BasedOnStyle: Google
+AllowShortFunctionsOnASingleLine: Inline
+ColumnLimit: 100
+IndentWidth: 4
+UseTab: Never
+PointerAlignment: Left

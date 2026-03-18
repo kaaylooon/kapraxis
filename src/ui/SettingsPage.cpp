@@ -82,9 +82,9 @@ SettingsPage::SettingsPage(QWidget* parent)
                  {"#1b1c1e", "#26282b", "#35383d", "#d0d0d0"});
     addThemeCard("Light", "Visual claro e leve", "light",
                  {"#f2f2f2", "#e6e6e6", "#d4d4d4", "#1f1f1f"});
-    addThemeCard("Palette", "Tema inspirado na paleta", "palette",
+    addThemeCard("Palette", "Tema inspirado na paleta ayu", "palette",
                  {"#0D1017", "#10141C", "#E6C08A", "#39BAE6"});
-
+    
     appearanceLayout->addSpacing(6);
     lblInfo = new QLabel("As mudancas sao aplicadas imediatamente.");
     appearanceLayout->addWidget(lblInfo);

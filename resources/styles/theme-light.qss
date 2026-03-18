@@ -169,7 +169,8 @@ QListWidget {
 }
 
 QWidget#listaCard {
-    background-color: transparent;
+    border-radius: 8px;
+    background: transparent;
 }
 
 QListWidget::item {
@@ -181,7 +182,8 @@ QListWidget#lista::item {
     margin: 0;
     padding: 6px;
     border-bottom: 1px solid #e1e1e1;
-    background-color: #ffffff;
+    border-radius: 8px;
+    background-color: #f1f1f1;
     selection-background-color: transparent;
     text-align: left;
 }
