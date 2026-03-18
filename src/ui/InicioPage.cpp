@@ -180,7 +180,7 @@ void InicioPage::showEvent(QShowEvent* event)
 
 void InicioPage::atualizarResumo()
 {
-    const int totalQuestoes = repo->listar().size();
+    const int totalQuestoes = repo->contar();
     lblTotalQuestoes->setText(QString::number(totalQuestoes));
 
     const QMap<QString, QMap<QString, int>> mapa = StudyStatsStore::loadDailySecondsByDiscipline();

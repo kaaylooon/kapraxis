@@ -25,8 +25,14 @@ add_executable(kapraxis
     src/ui/QuestoesPage.h
     src/ui/InicioPage.cpp
     src/ui/InicioPage.h
+    src/ui/SettingsPage.cpp
+    src/ui/SettingsPage.h
     src/ui/BlocosPage.h
     src/ui/BlocosPage.cpp
+    src/ui/ClipboardTextEdit.h
+    src/ui/ClipboardTextEdit.cpp
+    src/utils/ImageStore.h
+    src/utils/ImageStore.cpp
     ${kapraxis_RESOURCES}
 )
 

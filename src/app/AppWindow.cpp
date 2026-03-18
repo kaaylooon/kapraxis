@@ -8,10 +8,12 @@
 #include <QFile>
 #include <QFrame>
 #include <QApplication>
+#include <QSettings>
 
 #include "../ui/InicioPage.h"
 #include "../ui/QuestoesPage.h"
 #include "../ui/BlocosPage.h"
+#include "../ui/SettingsPage.h"
 
 AppWindow::AppWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -28,29 +30,51 @@ AppWindow::AppWindow(QWidget* parent)
     sidebar->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     sidebar->setIconSize(QSize(32, 32));
 
-    QStringList labels = {"", "", "", ""};
-    QStringList iconPaths = {
+    QStringList labelsTop = {"", "", ""};
+    QStringList labelsBottom = {""};
+    QStringList topIcons = {
         ":/resources/icons/house.svg",
         ":/resources/icons/list-ul.svg",
-        ":/resources/icons/view-list.svg",
         ":/resources/icons/stopwatch.svg"
     };
+    QStringList bottomIcons = {
+        ":/resources/icons/bookmark.svg"
+    };
 
-    for (int i = 0; i < labels.size(); ++i) {
-        QListWidgetItem *item = new QListWidgetItem(sidebar);
-        item->setIcon(QIcon(iconPaths[i]));
-        item->setText(labels[i]);
+    const int itemHeight = 54;
+    auto addPageItem = [&](const QString& text, const QString& iconPath, int pageIndex) {
+        auto* item = new QListWidgetItem(sidebar);
+        item->setIcon(QIcon(iconPath));
+        item->setText(text);
         item->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        item->setData(Qt::UserRole, pageIndex);
+        item->setSizeHint(QSize(1, itemHeight));
+        pageItems.append(item);
+    };
+
+    for (int i = 0; i < labelsTop.size(); ++i) {
+        addPageItem(labelsTop[i], topIcons[i], i);
+    }
+
+    spacerItem = new QListWidgetItem(sidebar);
+    spacerItem->setFlags(Qt::NoItemFlags);
+    spacerItem->setData(Qt::UserRole, -1);
+
+    for (int i = 0; i < labelsBottom.size(); ++i) {
+        const int pageIndex = labelsTop.size() + i;
+        addPageItem(labelsBottom[i], bottomIcons[i], pageIndex);
     }
     
     pages = new QStackedWidget;
     
     inicioPage = new InicioPage();
     pages->addWidget(inicioPage);
-    pages->addWidget(new QuestoesPage());
-    pages->addWidget(new QLabel("em desenvolvimento)"));
+    questoesPage = new QuestoesPage();
+    pages->addWidget(questoesPage);
     blocosPage = new BlocosPage();
     pages->addWidget(blocosPage);
+    settingsPage = new SettingsPage();
+    pages->addWidget(settingsPage);
     
     mainLayout->addWidget(sidebar, 1);
     mainLayout->addWidget(pages, 10); 
@@ -59,19 +83,59 @@ AppWindow::AppWindow(QWidget* parent)
     setWindowTitle("Kapraxis");
     resize(1280, 720);
     
-    connect(sidebar, &QListWidget::currentRowChanged,
-            pages, &QStackedWidget::setCurrentIndex);
+    connect(sidebar, &QListWidget::currentItemChanged, this, [this](QListWidgetItem* current, QListWidgetItem*) {
+        if (!current) return;
+        const int pageIndex = current->data(Qt::UserRole).toInt();
+        if (pageIndex < 0 || pageIndex >= pages->count()) return;
+        pages->setCurrentIndex(pageIndex);
+    });
     
-    sidebar->setCurrentRow(0);
+    sidebar->setCurrentItem(pageItems.isEmpty() ? nullptr : pageItems.first());
+    atualizarSpacerSidebar();
 
     carregarEstiloGlobal();
 
     connect(blocosPage, &BlocosPage::studyStatsUpdated,
             inicioPage, &InicioPage::atualizarResumo);
+
+    connect(settingsPage, &SettingsPage::themeChanged, this, &AppWindow::aplicarTema);
+    connect(settingsPage, &SettingsPage::removeAllRequested, questoesPage, &QuestoesPage::excluirTodasQuestoes);
+    connect(settingsPage, &SettingsPage::importKeepRequested, questoesPage, &QuestoesPage::importarKeepJson);
 }
 
 void AppWindow::carregarEstiloGlobal() {
-    QFile file(":/resources/styles/global.qss");
+    QSettings settings;
+    const QString themeId = settings.value("ui/theme", "dark").toString();
+    aplicarTema(themeId);
+}
+
+void AppWindow::resizeEvent(QResizeEvent* event) {
+    QMainWindow::resizeEvent(event);
+    atualizarSpacerSidebar();
+}
+
+void AppWindow::atualizarSpacerSidebar() {
+    if (!spacerItem || pageItems.isEmpty()) return;
+    const int itemHeight = 54;
+    const int splitIndex = 3;
+    const int topHeight = itemHeight * splitIndex;
+    const int bottomHeight = itemHeight * (pageItems.size() - splitIndex);
+    const int available = sidebar->viewport()->height();
+    const int spacerHeight = qMax(0, available - topHeight - bottomHeight - 8);
+    spacerItem->setSizeHint(QSize(1, spacerHeight));
+}
+
+void AppWindow::aplicarTema(const QString& themeId) {
+    QString path = ":/resources/styles/global.qss";
+    if (themeId == "soft") {
+        path = ":/resources/styles/theme-soft.qss";
+    } else if (themeId == "light") {
+        path = ":/resources/styles/theme-light.qss";
+    } else if (themeId == "palette") {
+        path = ":/resources/styles/theme-palette.qss";
+    }
+
+    QFile file(path);
     if (file.open(QFile::ReadOnly)) {
         QString style = QLatin1String(file.readAll());
         qApp->setStyleSheet(style);

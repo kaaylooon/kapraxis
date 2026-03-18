@@ -19,5 +19,8 @@
     <file>resources/icons/view-list.svg</file>
     <file>resources/icons/x.svg</file>
     <file>resources/styles/global.qss</file>
+    <file>resources/styles/theme-soft.qss</file>
+    <file>resources/styles/theme-light.qss</file>
+    <file>resources/styles/theme-palette.qss</file>
 </qresource>
 </RCC>

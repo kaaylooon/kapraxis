@@ -9,5 +9,7 @@ struct Questao {
     QString enunciado;
     QString resposta;
     QStringList tags;
+    QStringList enunciadoImagens;
+    QStringList respostaImagens;
     QDateTime criadaEm;
 };
