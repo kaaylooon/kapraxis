@@ -8,6 +8,7 @@
 #include <QDate>
 #include <QPainter>
 #include <QStyleOption>
+#include <QObject>
 
 #include "../repo/questao_repo_sqlite.h"
 #include "../repo/StudyStatsStore.h"
@@ -40,7 +41,7 @@ protected:
 
         if (dataSeconds.isEmpty()) {
             p.setPen(QColor(180, 180, 180));
-            p.drawText(r, Qt::AlignCenter, "Sem dados de estudo");
+            p.drawText(r, Qt::AlignCenter, QObject::tr("No study data"));
             return;
         }
 
@@ -107,11 +108,13 @@ InicioPage::InicioPage(QWidget* parent)
     rootLayout->setContentsMargins(24, 24, 24, 24);
     rootLayout->setSpacing(16);
 
-    auto* title = new QLabel("Kapraxis");
+    auto* title = new QLabel(tr("Kapraxis"));
     title->setObjectName("pageTitle");
+    title->setAccessibleDescription(tr("Name of the Kapraxis application."));
 
-    auto* subtitle = new QLabel("Visao geral dos estudos");
+    auto* subtitle = new QLabel(tr("Study overview"));
     subtitle->setObjectName("pageSubtitle");
+    subtitle->setAccessibleDescription(tr("Overview of recent study metrics."));
 
     rootLayout->addWidget(title);
     rootLayout->addWidget(subtitle);
@@ -126,8 +129,10 @@ InicioPage::InicioPage(QWidget* parent)
 
     lblTotalQuestoes = new QLabel("0");
     lblTotalQuestoes->setObjectName("metricValue");
-    auto* lblTotalCaption = new QLabel("Total de questoes");
+    lblTotalQuestoes->setAccessibleName(tr("Total questions recorded"));
+    auto* lblTotalCaption = new QLabel(tr("Total questions"));
     lblTotalCaption->setObjectName("metricLabel");
+    lblTotalCaption->setAccessibleName(tr("Total questions label"));
 
     cardQuestoesLayout->addWidget(lblTotalCaption);
     cardQuestoesLayout->addWidget(lblTotalQuestoes);
@@ -139,8 +144,10 @@ InicioPage::InicioPage(QWidget* parent)
 
     lblHorasEstudo = new QLabel("0m");
     lblHorasEstudo->setObjectName("metricValue");
-    auto* lblHorasCaption = new QLabel("Tempo total de estudo");
+    lblHorasEstudo->setAccessibleName(tr("Total study time recorded"));
+    auto* lblHorasCaption = new QLabel(tr("Total study time"));
     lblHorasCaption->setObjectName("metricLabel");
+    lblHorasCaption->setAccessibleName(tr("Total study time label"));
 
     cardHorasLayout->addWidget(lblHorasCaption);
     cardHorasLayout->addWidget(lblHorasEstudo);
@@ -162,6 +169,8 @@ InicioPage::InicioPage(QWidget* parent)
     chartWidget = new StudyChartWidget();
     chartWidget->setObjectName("studyChart");
     chartWidget->setAttribute(Qt::WA_StyledBackground, true);
+    chartWidget->setAccessibleName(tr("Study chart"));
+    chartWidget->setAccessibleDescription(tr("Shows study time over the last week."));
 
     //chartLayout->addWidget(chartTitle);
     chartLayout->addWidget(chartWidget);

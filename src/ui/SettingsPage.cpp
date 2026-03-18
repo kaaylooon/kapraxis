@@ -1,9 +1,11 @@
 #include "SettingsPage.h"
 
 #include <QButtonGroup>
+#include <QComboBox>
 #include <QFrame>
 #include <QGroupBox>
 #include <QLabel>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QSettings>
 #include <QHBoxLayout>
@@ -14,19 +16,19 @@ SettingsPage::SettingsPage(QWidget* parent)
     auto* layout = new QVBoxLayout(this);
     layout->setSpacing(12);
 
-    auto* title = new QLabel("Configuracoes");
+    auto* title = new QLabel(tr("Settings"));
     title->setObjectName("pageTitle");
     layout->addWidget(title);
 
-    auto* subtitle = new QLabel("Personalize a aparencia do Kapraxis");
+    auto* subtitle = new QLabel(tr("Personalize the Kapraxis appearance"));
     subtitle->setObjectName("pageSubtitle");
     layout->addWidget(subtitle);
 
-    auto* appearanceGroup = new QGroupBox("Aparencia");
+    auto* appearanceGroup = new QGroupBox(tr("Appearance"));
     auto* appearanceLayout = new QVBoxLayout(appearanceGroup);
     appearanceLayout->setSpacing(10);
 
-    auto* lblTema = new QLabel("Tema");
+    auto* lblTema = new QLabel(tr("Theme"));
     appearanceLayout->addWidget(lblTema);
 
     themeGroup = new QButtonGroup(this);
@@ -76,36 +78,61 @@ SettingsPage::SettingsPage(QWidget* parent)
         });
     };
 
-    addThemeCard("Dark", "Contraste alto, foco total", "dark",
+    addThemeCard(tr("Dark"), tr("High contrast focus mode"), "dark",
                  {"#151515", "#2a2a2a", "#3e3e3e", "#e0e0e0"});
-    addThemeCard("Soft", "Cinzas suaves e discretos", "soft",
+    addThemeCard(tr("Soft"), tr("Soft gray palette"), "soft",
                  {"#1b1c1e", "#26282b", "#35383d", "#d0d0d0"});
-    addThemeCard("Light", "Visual claro e leve", "light",
+    addThemeCard(tr("Light"), tr("Clean and bright interface"), "light",
                  {"#f2f2f2", "#e6e6e6", "#d4d4d4", "#1f1f1f"});
-    addThemeCard("Palette", "Tema inspirado na paleta ayu", "palette",
+    addThemeCard(tr("Palette"), tr("Palette-inspired appearance"), "palette",
                  {"#0D1017", "#10141C", "#E6C08A", "#39BAE6"});
     
     appearanceLayout->addSpacing(6);
-    lblInfo = new QLabel("As mudancas sao aplicadas imediatamente.");
+    lblInfo = new QLabel(tr("Theme changes are applied instantly."));
     appearanceLayout->addWidget(lblInfo);
+    lblInfo->setAccessibleName(tr("Immediate application notice"));
 
     layout->addWidget(appearanceGroup);
 
-    auto* dangerGroup = new QGroupBox("Zona de risco");
+    auto* languageGroup = new QGroupBox(tr("Language"));
+    auto* languageLayout = new QVBoxLayout(languageGroup);
+    languageLayout->setSpacing(6);
+
+    languageCombo = new QComboBox();
+    languageCombo->addItem(tr("English"), "en");
+    languageCombo->addItem(tr("Portuguese"), "pt_BR");
+    languageCombo->setAccessibleName(tr("Language selector"));
+    languageCombo->setCursor(Qt::PointingHandCursor);
+
+    lblLanguageNote = new QLabel(tr("Language changes require restarting the app."));
+    lblLanguageNote->setWordWrap(true);
+    lblLanguageNote->setAccessibleName(tr("Language change notice"));
+
+    languageLayout->addWidget(languageCombo);
+    languageLayout->addWidget(lblLanguageNote);
+    layout->addWidget(languageGroup);
+
+    connect(languageCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &SettingsPage::handleLanguageSelectionChanged);
+    loadCurrentLanguage();
+
+    auto* dangerGroup = new QGroupBox(tr("Danger zone"));
     auto* dangerLayout = new QVBoxLayout(dangerGroup);
-    auto* dangerText = new QLabel("Acoes irreversiveis");
+    auto* dangerText = new QLabel(tr("Irreversible actions"));
     dangerLayout->addWidget(dangerText);
 
-    auto* btnImportKeep = new QPushButton("Importar Keep (JSON)");
+    auto* btnImportKeep = new QPushButton(tr("Import Keep (JSON)"));
     btnImportKeep->setObjectName("btnImportKeep");
     btnImportKeep->setCursor(Qt::PointingHandCursor);
     dangerLayout->addWidget(btnImportKeep);
+    btnImportKeep->setAccessibleName(tr("Import Keep notes"));
     connect(btnImportKeep, &QPushButton::clicked, this, &SettingsPage::importKeepRequested);
 
-    auto* btnRemoveAll = new QPushButton("Apagar todas as questoes");
+    auto* btnRemoveAll = new QPushButton(tr("Delete all questions"));
     btnRemoveAll->setObjectName("btnRemoveAll");
     btnRemoveAll->setCursor(Qt::PointingHandCursor);
     dangerLayout->addWidget(btnRemoveAll);
+    btnRemoveAll->setAccessibleName(tr("Delete all questions"));
     connect(btnRemoveAll, &QPushButton::clicked, this, &SettingsPage::removeAllRequested);
 
     layout->addWidget(dangerGroup);
@@ -119,6 +146,33 @@ void SettingsPage::loadCurrentTheme() {
     QSettings settings;
     const QString themeId = settings.value("ui/theme", "dark").toString();
     applyThemeSelection(themeId);
+}
+
+void SettingsPage::loadCurrentLanguage() {
+    if (!languageCombo) return;
+    QSettings settings;
+    const QString languageId = settings.value("ui/language", "en").toString();
+    const int index = languageCombo->findData(languageId);
+    if (index >= 0) {
+        currentLanguageId = languageId;
+        languageCombo->blockSignals(true);
+        languageCombo->setCurrentIndex(index);
+        languageCombo->blockSignals(false);
+    }
+}
+
+void SettingsPage::handleLanguageSelectionChanged(int index) {
+    if (!languageCombo) return;
+    const QString languageId = languageCombo->itemData(index).toString();
+    if (languageId.isEmpty() || languageId == currentLanguageId) {
+        return;
+    }
+    currentLanguageId = languageId;
+    QSettings settings;
+    settings.setValue("ui/language", languageId);
+    emit languageChanged(languageId);
+    QMessageBox::information(this, tr("Restart required"),
+                             tr("Restart Kapraxis to apply the selected language."));
 }
 
 void SettingsPage::applyThemeSelection(const QString& themeId) {

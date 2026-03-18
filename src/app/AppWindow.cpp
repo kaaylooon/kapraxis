@@ -1,14 +1,18 @@
 #include "AppWindow.h"
-#include <QListWidget>
-#include <QStackedWidget>
-#include <QHBoxLayout>
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QLabel>
+#include <QAbstractAnimation>
+#include <QApplication>
 #include <QFile>
 #include <QFrame>
-#include <QApplication>
+#include <QGraphicsOpacityEffect>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QEasingCurve>
+#include <QMessageBox>
+#include <QPropertyAnimation>
 #include <QSettings>
+#include <QSignalBlocker>
+#include <QStackedWidget>
+#include <QVBoxLayout>
 
 #include "../ui/InicioPage.h"
 #include "../ui/QuestoesPage.h"
@@ -18,6 +22,8 @@
 AppWindow::AppWindow(QWidget* parent)
     : QMainWindow(parent)
 {
+    carregarIdioma();
+
     auto* central = new QWidget(this);
     auto* mainLayout = new QHBoxLayout(central);
     mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -29,6 +35,8 @@ AppWindow::AppWindow(QWidget* parent)
     sidebar->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     sidebar->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     sidebar->setIconSize(QSize(32, 32));
+    sidebar->setAccessibleName(tr("Main navigation"));
+    sidebar->setAccessibleDescription(tr("Switches between the Kapraxis sections."));
 
     QStringList labelsTop = {"", "", ""};
     QStringList labelsBottom = {""};
@@ -66,6 +74,11 @@ AppWindow::AppWindow(QWidget* parent)
     }
     
     pages = new QStackedWidget;
+    pagesOpacityEffect = new QGraphicsOpacityEffect(pages);
+    pagesOpacityEffect->setOpacity(1.0);
+    pages->setGraphicsEffect(pagesOpacityEffect);
+    pages->setAccessibleName(tr("Main content"));
+    pages->setAccessibleDescription(tr("Shows the overview, questions, blocks, and settings."));
     
     inicioPage = new InicioPage();
     pages->addWidget(inicioPage);
@@ -75,22 +88,29 @@ AppWindow::AppWindow(QWidget* parent)
     pages->addWidget(blocosPage);
     settingsPage = new SettingsPage();
     pages->addWidget(settingsPage);
+
+    inicioPage->setAccessibleName(tr("Home page"));
+    questoesPage->setAccessibleName(tr("Questions page"));
+    blocosPage->setAccessibleName(tr("Blocks page"));
+    settingsPage->setAccessibleName(tr("Settings page"));
     
     mainLayout->addWidget(sidebar, 1);
     mainLayout->addWidget(pages, 10); 
     
     setCentralWidget(central);
-    setWindowTitle("Kapraxis");
+    setWindowTitle(tr("Kapraxis"));
     resize(1280, 720);
     
     connect(sidebar, &QListWidget::currentItemChanged, this, [this](QListWidgetItem* current, QListWidgetItem*) {
         if (!current) return;
         const int pageIndex = current->data(Qt::UserRole).toInt();
-        if (pageIndex < 0 || pageIndex >= pages->count()) return;
-        pages->setCurrentIndex(pageIndex);
+        animatePageTransition(pageIndex);
     });
-    
-    sidebar->setCurrentItem(pageItems.isEmpty() ? nullptr : pageItems.first());
+
+    {
+        QSignalBlocker blocker(sidebar);
+        sidebar->setCurrentItem(pageItems.isEmpty() ? nullptr : pageItems.first());
+    }
     atualizarSpacerSidebar();
 
     carregarEstiloGlobal();
@@ -101,6 +121,7 @@ AppWindow::AppWindow(QWidget* parent)
     connect(settingsPage, &SettingsPage::themeChanged, this, &AppWindow::aplicarTema);
     connect(settingsPage, &SettingsPage::removeAllRequested, questoesPage, &QuestoesPage::excluirTodasQuestoes);
     connect(settingsPage, &SettingsPage::importKeepRequested, questoesPage, &QuestoesPage::importarKeepJson);
+    connect(settingsPage, &SettingsPage::languageChanged, this, &AppWindow::aplicarIdioma);
 }
 
 void AppWindow::carregarEstiloGlobal() {
@@ -126,19 +147,116 @@ void AppWindow::atualizarSpacerSidebar() {
 }
 
 void AppWindow::aplicarTema(const QString& themeId) {
+    QString normalizedTheme = themeId;
+    if (normalizedTheme.isEmpty()) {
+        normalizedTheme = "dark";
+    }
+    if (normalizedTheme == currentThemeId) {
+        return;
+    }
+
     QString path = ":/resources/styles/global.qss";
-    if (themeId == "soft") {
+    if (normalizedTheme == "soft") {
         path = ":/resources/styles/theme-soft.qss";
-    } else if (themeId == "light") {
+    } else if (normalizedTheme == "light") {
         path = ":/resources/styles/theme-light.qss";
-    } else if (themeId == "palette") {
+    } else if (normalizedTheme == "palette") {
         path = ":/resources/styles/theme-palette.qss";
     }
 
-    QFile file(path);
-    if (file.open(QFile::ReadOnly)) {
-        QString style = QLatin1String(file.readAll());
-        qApp->setStyleSheet(style);
-        file.close();
+    currentThemeId = normalizedTheme;
+
+    if (!isVisible()) {
+        applyStyleSheet(path);
+        return;
     }
+
+    auto* fadeOut = new QPropertyAnimation(this, "windowOpacity", this);
+    fadeOut->setDuration(180);
+    fadeOut->setStartValue(1.0);
+    fadeOut->setEndValue(0.65);
+    fadeOut->setEasingCurve(QEasingCurve::InOutQuad);
+    connect(fadeOut, &QPropertyAnimation::finished, this, [this, path]() {
+        applyStyleSheet(path);
+        auto* fadeIn = new QPropertyAnimation(this, "windowOpacity", this);
+        fadeIn->setDuration(220);
+        fadeIn->setStartValue(0.65);
+        fadeIn->setEndValue(1.0);
+        fadeIn->setEasingCurve(QEasingCurve::OutCubic);
+        fadeIn->start(QAbstractAnimation::DeleteWhenStopped);
+    });
+    fadeOut->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void AppWindow::applyStyleSheet(const QString& path) {
+    QFile file(path);
+    if (!file.open(QFile::ReadOnly)) {
+        return;
+    }
+    const QString style = QString::fromUtf8(file.readAll());
+    qApp->setStyleSheet(style);
+}
+
+void AppWindow::animatePageTransition(int pageIndex) {
+    if (!pages || pageIndex < 0 || pageIndex >= pages->count()) {
+        return;
+    }
+    if (pageIndex == pages->currentIndex() || pageTransitionInProgress) {
+        return;
+    }
+
+    if (!pagesOpacityEffect) {
+        pagesOpacityEffect = new QGraphicsOpacityEffect(pages);
+        pages->setGraphicsEffect(pagesOpacityEffect);
+    }
+
+    pageTransitionInProgress = true;
+    auto* fadeOut = new QPropertyAnimation(pagesOpacityEffect, "opacity", this);
+    fadeOut->setDuration(200);
+    fadeOut->setStartValue(1.0);
+    fadeOut->setEndValue(0.35);
+    fadeOut->setEasingCurve(QEasingCurve::InCubic);
+    connect(fadeOut, &QPropertyAnimation::finished, this, [this, pageIndex]() {
+        pages->setCurrentIndex(pageIndex);
+        auto* fadeIn = new QPropertyAnimation(pagesOpacityEffect, "opacity", this);
+        fadeIn->setDuration(240);
+        fadeIn->setStartValue(0.35);
+        fadeIn->setEndValue(1.0);
+        fadeIn->setEasingCurve(QEasingCurve::OutCubic);
+        connect(fadeIn, &QPropertyAnimation::finished, this, [this]() {
+            pageTransitionInProgress = false;
+        });
+        fadeIn->start(QAbstractAnimation::DeleteWhenStopped);
+    });
+    fadeOut->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void AppWindow::carregarIdioma() {
+    QSettings settings;
+    const QString languageId = settings.value("ui/language", "en").toString();
+    applyLanguage(languageId);
+}
+
+void AppWindow::applyLanguage(const QString& languageId) {
+    if (languageId == currentLanguageId) {
+        return;
+    }
+    qApp->removeTranslator(&translator_);
+    if (languageId == "pt_BR") {
+        if (translator_.load(":/translations/kapraxis_pt_BR.qm")) {
+            qApp->installTranslator(&translator_);
+        }
+    }
+    currentLanguageId = languageId;
+}
+
+void AppWindow::aplicarIdioma(const QString& languageId) {
+    if (languageId == currentLanguageId) {
+        return;
+    }
+    QSettings settings;
+    settings.setValue("ui/language", languageId);
+    applyLanguage(languageId);
+    QMessageBox::information(this, tr("Restart required"),
+                             tr("Restart Kapraxis to apply the selected language."));
 }

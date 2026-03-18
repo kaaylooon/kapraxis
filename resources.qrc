@@ -22,5 +22,6 @@
     <file>resources/styles/theme-soft.qss</file>
     <file>resources/styles/theme-light.qss</file>
     <file>resources/styles/theme-palette.qss</file>
+    <file>translations/kapraxis_pt_BR.qm</file>
 </qresource>
 </RCC>

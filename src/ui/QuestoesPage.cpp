@@ -572,7 +572,7 @@ QuestoesPage::QuestoesPage(QWidget* parent)
 
 void QuestoesPage::adicionarQuestao() {
     Questao q;
-    if (!abrirDialogQuestao(q, "Nova questão", "Adicionar questão", "Salvar")) {
+    if (!abrirDialogQuestao(q, "New question", "Add question", "Save")) {
         return;
     }
     
@@ -674,7 +674,7 @@ void QuestoesPage::editarQuestao() {
 
     if (questao.id == 0) return; 
 
-    if (!abrirDialogQuestao(questao, "Editar questão", "Editar questão", "Salvar alterações")) {
+    if (!abrirDialogQuestao(questao, "Edit question", "Edit question", "Save changes")) {
         return;
     }
 
@@ -690,8 +690,8 @@ void QuestoesPage::excluirQuestao() {
     int id = item->data(Qt::UserRole).toInt();
 
     int resposta = QMessageBox::question(
-        this, "Confirmar exclusão",
-        "Tem certeza que deseja excluir esta questão?",
+        this, tr("Confirm deletion"),
+        tr("Are you sure you want to delete this question?"),
         QMessageBox::Yes | QMessageBox::No);
     
     if (resposta == QMessageBox::Yes) {
@@ -1262,7 +1262,7 @@ bool QuestoesPage::abrirDialogQuestao(Questao& ioQuestao,
 
     connect(buttons, &QDialogButtonBox::accepted, [&]() {
         if (edtEnunciado->toPlainText().trimmed().isEmpty()) {
-            QMessageBox::warning(&dialog, "Validação", "O enunciado não pode ficar vazio.");
+            QMessageBox::warning(&dialog, tr("Validation"), tr("The question text cannot be empty."));
             return;
         }
         dialog.accept();

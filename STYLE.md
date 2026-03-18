@@ -23,3 +23,7 @@
 - Log errors consistently (use `qDebug()` for now) and fail fast when invariants are violated.
 
 Document deviations from these rules directly in the file, referencing the section that explains the exception.
+
+**Internacionalização**
+- Run `/usr/lib/qt6/bin/lupdate src -ts translations/kapraxis_pt_BR.ts` after new or updated `tr()` strings are introduced.
+- Rebuild the binary `.qm` with `/usr/lib/qt6/bin/lrelease translations/kapraxis_pt_BR.ts` and keep `resources.qrc` in sync so the runtime can load the translation.

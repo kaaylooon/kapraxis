@@ -24,19 +24,19 @@ RevisaoPage::RevisaoPage(QWidget* parent)
     mainLayout->setSpacing(15);
     
     // Timer
-    auto* timerGroup = new QGroupBox("Temporizador");
+    auto* timerGroup = new QGroupBox(tr("Timer"));
     auto* timerLayout = new QVBoxLayout(timerGroup);
     
     lblTimer = new QLabel("00:00:00");
     lblTimer->setStyleSheet("font-size: 42px; display: flex; font-weight: bold; text-align: center;");
     
-    lblStatus = new QLabel("Pronto para começar");
+    lblStatus = new QLabel(tr("Ready to begin"));
     lblStatus->setStyleSheet("text-align: center; color: #666;");
     
     auto* buttonLayout = new QHBoxLayout();
-    btnIniciar = new QPushButton(" Iniciar");
-    btnPausar = new QPushButton("▶ Pausar");
-    btnFinalizar = new QPushButton("⏹ Finalizar");
+    btnIniciar = new QPushButton("▶ Start");
+    btnPausar = new QPushButton(" Pause");
+    btnFinalizar = new QPushButton("⏹ Finish");
     
     btnPausar->setEnabled(false);
     btnFinalizar->setEnabled(false);
@@ -49,19 +49,20 @@ RevisaoPage::RevisaoPage(QWidget* parent)
     timerLayout->addWidget(lblStatus);
     timerLayout->addLayout(buttonLayout);
     
-    auto* detailsGroup = new QGroupBox("Detalhes");
+    auto* detailsGroup = new QGroupBox(tr("Details"));
     auto* detailsLayout = new QFormLayout(detailsGroup);
     
     comboDisciplina = new QComboBox();
-    comboDisciplina->addItems({"Matemática", "Física", "Química", "Português", "Inglês", "Outra"});
+    comboDisciplina->addItems({tr("Mathematics"), tr("Physics"), tr("Chemistry"),
+                               tr("Portuguese"), tr("English"), tr("Other")});
     
     txtTopico = new QLineEdit();
-    txtTopico->setPlaceholderText("Tópico estudado...");
+    txtTopico->setPlaceholderText(tr("Study topic..."));
     
-    detailsLayout->addRow("Disciplina:", comboDisciplina);
-    detailsLayout->addRow("Tópico:", txtTopico);
+    detailsLayout->addRow(tr("Discipline:"), comboDisciplina);
+    detailsLayout->addRow(tr("Topic:"), txtTopico);
     
-    auto* historyGroup = new QGroupBox("Histórico");
+    auto* historyGroup = new QGroupBox(tr("History"));
     listaBlocos = new QListWidget();
     
     auto* historyLayout = new QVBoxLayout(historyGroup);
@@ -94,7 +95,7 @@ void RevisaoPage::iniciarBloco()
     blocoAtual.topico = txtTopico->text().trimmed();
     blocoAtual.inicio = QDateTime::currentDateTime();
     
-    lblStatus->setText("Estudando: " + disciplina);
+    lblStatus->setText(tr("Studying: %1").arg(disciplina));
     btnIniciar->setEnabled(false);
     btnPausar->setEnabled(true);
     btnFinalizar->setEnabled(true);
@@ -110,12 +111,12 @@ void RevisaoPage::pausarContinuarBloco()
     if (!emPausa) {
         emPausa = true;
         timer->stop();
-        lblStatus->setText("▶ Pausado");
-        btnPausar->setText(" Continuar");
+        lblStatus->setText(tr("▶ Paused"));
+        btnPausar->setText(tr(" Resume"));
     } else {
         emPausa = false;
-        lblStatus->setText("Estudando: " + blocoAtual.disciplina);
-        btnPausar->setText("▶ Pausar");
+        lblStatus->setText(tr("Studying: %1").arg(blocoAtual.disciplina));
+        btnPausar->setText(tr("▶ Pause"));
         elapsedTimer->restart();
         timer->start();
     }
@@ -149,10 +150,10 @@ void RevisaoPage::finalizarBloco()
     tempoDecorrido = 0;
     
     lblTimer->setText("00:00:00");
-    lblStatus->setText("Pronto para começar");
+    lblStatus->setText(tr("Ready to begin"));
     btnIniciar->setEnabled(true);
     btnPausar->setEnabled(false);
-    btnPausar->setText("⏸ Pausar");
+    btnPausar->setText(tr("⏸ Pause"));
     btnFinalizar->setEnabled(false);
 }
 

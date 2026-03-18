@@ -35,7 +35,7 @@ QuestaoRepoSQLite::QuestaoRepoSQLite() {
     db_ = QSqlDatabase::addDatabase("QSQLITE");
     db_.setDatabaseName(appDataDbPath);
     if (!db_.open()) {
-        qDebug() << "Erro ao abrir banco de dados:" << db_.lastError().text();
+        qDebug() << "Error opening database:" << db_.lastError().text();
         return;
     }
 
@@ -72,7 +72,7 @@ void QuestaoRepoSQLite::Init() {
 
 void QuestaoRepoSQLite::Atualizar(const Questao& qst) {
     if (qst.id <= 0) {
-        qDebug() << "ID inválido para atualização";
+        qDebug() << "Invalid ID for update";
         return;
     }
     
@@ -93,7 +93,7 @@ void QuestaoRepoSQLite::Atualizar(const Questao& qst) {
     q.bindValue(":criada_em", qst.criadaEm.toString(Qt::ISODate));
     
     if (!q.exec()) {
-        qDebug() << "Erro ao atualizar questão:" << q.lastError().text();
+        qDebug() << "Error updating question:" << q.lastError().text();
         return;
     }
 
@@ -109,7 +109,7 @@ void QuestaoRepoSQLite::Salvar(const Questao& qst) {
     q.addBindValue(qst.tags.join(","));
     q.addBindValue(qst.criadaEm.toString(Qt::ISODate));
     if (!q.exec()) {
-        qDebug() << "Erro ao salvar questão:" << q.lastError().text();
+        qDebug() << "Error saving question:" << q.lastError().text();
         return;
     }
 
@@ -127,7 +127,7 @@ Questao QuestaoRepoSQLite::BuscarPorId(int id) {
     q.bindValue(":id", id);
     
     if (!q.exec()) {
-        qDebug() << "Erro ao buscar questão:" << q.lastError().text();
+        qDebug() << "Error fetching question:" << q.lastError().text();
         return Questao();
     }
     
@@ -196,7 +196,7 @@ void QuestaoRepoSQLite::Excluir(int id) {
     q.bindValue(":id", id);
     
     if (!q.exec()) {
-        qDebug() << "Erro ao excluir questão:" << q.lastError().text();
+        qDebug() << "Error deleting question:" << q.lastError().text();
     }
 }
 
@@ -213,10 +213,10 @@ void QuestaoRepoSQLite::ExcluirTodas() {
 
     QSqlQuery q(db_);
     if (!q.exec("DELETE FROM questao_imagens")) {
-        qDebug() << "Erro ao excluir imagens:" << q.lastError().text();
+        qDebug() << "Error deleting images:" << q.lastError().text();
     }
     if (!q.exec("DELETE FROM questoes")) {
-        qDebug() << "Erro ao excluir questoes:" << q.lastError().text();
+        qDebug() << "Error deleting questions:" << q.lastError().text();
     }
 }
 
@@ -240,7 +240,7 @@ QStringList QuestaoRepoSQLite::ListarImagens(int questaoId, const QString& tipo)
     q.bindValue(":id", questaoId);
     q.bindValue(":tipo", tipo);
     if (!q.exec()) {
-        qDebug() << "Erro ao listar imagens:" << q.lastError().text();
+        qDebug() << "Error listing images:" << q.lastError().text();
         return paths;
     }
     while (q.next()) {
@@ -266,7 +266,7 @@ void QuestaoRepoSQLite::SalvarImagens(int questaoId, const QStringList& paths, c
         q.bindValue(":ordem", ordem++);
         q.bindValue(":criada_em", QDateTime::currentDateTime().toString(Qt::ISODate));
         if (!q.exec()) {
-            qDebug() << "Erro ao salvar imagem:" << q.lastError().text();
+            qDebug() << "Error saving image:" << q.lastError().text();
         }
     }
 }
@@ -284,7 +284,7 @@ void QuestaoRepoSQLite::SincronizarImagens(int questaoId, const QStringList& pat
     del.bindValue(":id", questaoId);
     del.bindValue(":tipo", tipo);
     if (!del.exec()) {
-        qDebug() << "Erro ao limpar imagens:" << del.lastError().text();
+        qDebug() << "Error clearing images:" << del.lastError().text();
         return;
     }
 
@@ -305,7 +305,7 @@ void QuestaoRepoSQLite::ExcluirImagens(int questaoId) {
     del.prepare("DELETE FROM questao_imagens WHERE questao_id = :id");
     del.bindValue(":id", questaoId);
     if (!del.exec()) {
-        qDebug() << "Erro ao excluir imagens:" << del.lastError().text();
+        qDebug() << "Error deleting images:" << del.lastError().text();
     }
 }
 

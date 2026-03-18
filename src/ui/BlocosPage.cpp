@@ -25,19 +25,24 @@ BlocosPage::BlocosPage(QWidget* parent)
     mainLayout->setSpacing(15);
     
     // Timer
-    auto* timerGroup = new QGroupBox("Temporizador");
+    auto* timerGroup = new QGroupBox(tr("Timer"));
     auto* timerLayout = new QVBoxLayout(timerGroup);
     
     lblTimer = new QLabel("00:00:00");
     lblTimer->setStyleSheet("font-size: 42px; display: flex; font-weight: bold; text-align: center;");
-    
-    lblStatus = new QLabel("Pronto para começar");
+    lblTimer->setAccessibleName(tr("Main timer"));
+
+    lblStatus = new QLabel(tr("Ready to begin"));
     lblStatus->setStyleSheet("text-align: center; color: #666;");
+    lblStatus->setAccessibleName(tr("Timer status"));
     
     auto* buttonLayout = new QHBoxLayout();
-    btnIniciar = new QPushButton("▶  Iniciar");
-    btnPausar = new QPushButton("  Pausar");
-    btnFinalizar = new QPushButton("⏹  Finalizar");
+    btnIniciar = new QPushButton(tr("▶  Start"));
+    btnPausar = new QPushButton(tr("  Pause"));
+    btnFinalizar = new QPushButton(tr("⏹  Finish"));
+    btnIniciar->setAccessibleName(tr("Start timer"));
+    btnPausar->setAccessibleName(tr("Pause or resume block"));
+    btnFinalizar->setAccessibleName(tr("Finish block"));
     
     btnPausar->setVisible(false);
     btnFinalizar->setVisible(false);
@@ -51,19 +56,24 @@ BlocosPage::BlocosPage(QWidget* parent)
     timerLayout->addWidget(lblStatus);
     timerLayout->addLayout(buttonLayout);
     
-    auto* detailsGroup = new QGroupBox("Detalhes");
+    auto* detailsGroup = new QGroupBox(tr("Details"));
     auto* detailsLayout = new QFormLayout(detailsGroup);
     
     comboDisciplina = new QComboBox();
-    comboDisciplina->addItems({"Matemática", "Física", "Química", "Português", "Inglês", "Outra"});
+    comboDisciplina->addItems({
+        tr("Mathematics"), tr("Physics"), tr("Chemistry"),
+        tr("Portuguese"), tr("English"), tr("Other")
+    });
+    comboDisciplina->setAccessibleName(tr("Select discipline"));
     
     txtTopico = new QLineEdit();
-    txtTopico->setPlaceholderText("Tópico estudado...");
+    txtTopico->setPlaceholderText(tr("Study topic..."));
+    txtTopico->setAccessibleName(tr("Block comment field"));
     
-    detailsLayout->addRow("Disciplina:", comboDisciplina);
-    detailsLayout->addRow("Comentário:", txtTopico);
+    detailsLayout->addRow(tr("Discipline:"), comboDisciplina);
+    detailsLayout->addRow(tr("Comment:"), txtTopico);
     
-    auto* historyGroup = new QGroupBox("Histórico");
+    auto* historyGroup = new QGroupBox(tr("History"));
     listaBlocos = new QListWidget();
     
     auto* historyLayout = new QVBoxLayout(historyGroup);
@@ -96,7 +106,7 @@ void BlocosPage::iniciarBloco()
     blocoAtual.topico = txtTopico->text().trimmed();
     blocoAtual.inicio = QDateTime::currentDateTime();
     
-    lblStatus->setText("Estudando " + disciplina + "...");
+    lblStatus->setText(tr("Studying %1...").arg(disciplina));
     btnPausar->setVisible(true);
     btnFinalizar->setVisible(true);
     btnIniciar->setVisible(false);
@@ -113,12 +123,12 @@ void BlocosPage::pausarContinuarBloco()
         emPausa = true;
         timer->stop();
         tempoDecorrido += elapsedTimer->elapsed() / 1000;
-        lblStatus->setText("  Pausado");
-        btnPausar->setText("▶  Continuar");
+        lblStatus->setText(tr("  Paused"));
+        btnPausar->setText(tr("▶  Resume"));
     } else {
         emPausa = false;
-        lblStatus->setText("Estudando " + blocoAtual.disciplina + "...");
-        btnPausar->setText("  Pausar");
+        lblStatus->setText(tr("Studying %1...").arg(blocoAtual.disciplina));
+        btnPausar->setText(tr("  Pause"));
         elapsedTimer->restart();
         timer->start();
     }
@@ -160,10 +170,10 @@ void BlocosPage::finalizarBloco()
     tempoDecorrido = 0;
     
     lblTimer->setText("00:00:00");
-    lblStatus->setText("Pronto para começar");
+    lblStatus->setText(tr("Ready to begin"));
     btnIniciar->setVisible(true);
     btnPausar->setVisible(false);
-    btnPausar->setText("⏸ Pausar");
+    btnPausar->setText(tr("⏸ Pause"));
     btnFinalizar->setVisible(false);
 }
 
