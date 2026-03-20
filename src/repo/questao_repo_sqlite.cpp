@@ -1,14 +1,14 @@
 #include "questao_repo_sqlite.h"
 
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QSqlError>
-#include <QVariant>
-#include <QDebug>
 #include <QDateTime>
-#include <QStandardPaths>
+#include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QStandardPaths>
+#include <QVariant>
 
 namespace kapraxis {
 namespace repo {
@@ -24,29 +24,41 @@ QuestaoRepoSQLite::QuestaoRepoSQLite() {
         QDir().mkpath(appDataDir);
     }
 
-    const QString appDataDbPath = appDataDir.isEmpty()
-        ? QString("questoes.db")
-        : QDir(appDataDir).filePath("questoes.db");
+    const QString appDataDbPath =
+        appDataDir.isEmpty() ? QString("questoes.db")
+                             : QDir(appDataDir).filePath("questoes.db");
 
-    if (appDataDbPath != "questoes.db" && !QFile::exists(appDataDbPath) && QFile::exists("questoes.db")) {
+    if (appDataDbPath != "questoes.db" &&
+        !QFile::exists(appDataDbPath) &&
+        QFile::exists("questoes.db")) {
         QFile::copy("questoes.db", appDataDbPath);
     }
 
-    db_ = QSqlDatabase::addDatabase("QSQLITE");
-    db_.setDatabaseName(appDataDbPath);
-    if (!db_.open()) {
-        qDebug() << "Error opening database:" << db_.lastError().text();
-        return;
-    }
+    if (QSqlDatabase::contains("kapraxis_connection")) {
+        db_ = QSqlDatabase::database("kapraxis_connection");
 
-    {
+        if (!db_.isOpen()) {
+            if (!db_.open()) {
+                qDebug() << "Error reopening database:" << db_.lastError().text();
+                return;
+            }
+        }
+
+    } else {
+        db_ = QSqlDatabase::addDatabase("QSQLITE", "kapraxis_connection");
+        db_.setDatabaseName(appDataDbPath);
+
+        if (!db_.open()) {
+            qDebug() << "Error opening database:" << db_.lastError().text();
+            return;
+        }
+
         QSqlQuery pragma(db_);
         pragma.exec("PRAGMA foreign_keys = ON");
+
+        Init();
     }
-
-    Init();
 }
-
 void QuestaoRepoSQLite::Init() {
     QSqlQuery q(db_);
     q.exec(
@@ -55,8 +67,7 @@ void QuestaoRepoSQLite::Init() {
         "enunciado TEXT,"
         "resposta TEXT,"
         "tags TEXT,"
-        "criada_em TEXT)"
-    );
+        "criada_em TEXT)");
 
     q.exec(
         "CREATE TABLE IF NOT EXISTS questao_imagens ("
@@ -66,8 +77,7 @@ void QuestaoRepoSQLite::Init() {
         "path TEXT NOT NULL,"
         "ordem INTEGER,"
         "criada_em TEXT,"
-        "FOREIGN KEY(questao_id) REFERENCES questoes(id) ON DELETE CASCADE)"
-    );
+        "FOREIGN KEY(questao_id) REFERENCES questoes(id) ON DELETE CASCADE)");
 }
 
 void QuestaoRepoSQLite::Atualizar(const Questao& qst) {
@@ -75,7 +85,7 @@ void QuestaoRepoSQLite::Atualizar(const Questao& qst) {
         qDebug() << "Invalid ID for update";
         return;
     }
-    
+
     QSqlQuery q(db_);
     q.prepare(
         "UPDATE questoes SET "
@@ -83,15 +93,14 @@ void QuestaoRepoSQLite::Atualizar(const Questao& qst) {
         "resposta = :resposta, "
         "tags = :tags, "
         "criada_em = :criada_em "
-        "WHERE id = :id"
-    );
-    
+        "WHERE id = :id");
+
     q.bindValue(":id", qst.id);
     q.bindValue(":enunciado", qst.enunciado);
     q.bindValue(":resposta", qst.resposta);
     q.bindValue(":tags", qst.tags.join(","));
     q.bindValue(":criada_em", qst.criadaEm.toString(Qt::ISODate));
-    
+
     if (!q.exec()) {
         qDebug() << "Error updating question:" << q.lastError().text();
         return;
@@ -125,12 +134,12 @@ Questao QuestaoRepoSQLite::BuscarPorId(int id) {
     QSqlQuery q(db_);
     q.prepare("SELECT * FROM questoes WHERE id = :id");
     q.bindValue(":id", id);
-    
+
     if (!q.exec()) {
         qDebug() << "Error fetching question:" << q.lastError().text();
         return Questao();
     }
-    
+
     if (q.next()) {
         Questao qs;
         qs.id = q.value("id").toInt();
@@ -142,7 +151,7 @@ Questao QuestaoRepoSQLite::BuscarPorId(int id) {
         qs.respostaImagens = ListarImagens(qs.id, "resposta");
         return qs;
     }
-    
+
     return Questao();
 }
 
@@ -166,7 +175,8 @@ QList<Questao> QuestaoRepoSQLite::Listar() {
 
 QList<Questao> QuestaoRepoSQLite::ListarBasico() {
     QList<Questao> list;
-    QSqlQuery q("SELECT id, enunciado, resposta, tags, criada_em FROM questoes ORDER BY id DESC", db_);
+    QSqlQuery q("SELECT id, enunciado, resposta, tags, criada_em FROM questoes ORDER BY id DESC",
+                db_);
 
     while (q.next()) {
         Questao qs;
@@ -194,7 +204,7 @@ void QuestaoRepoSQLite::Excluir(int id) {
     QSqlQuery q(db_);
     q.prepare("DELETE FROM questoes WHERE id = :id");
     q.bindValue(":id", id);
-    
+
     if (!q.exec()) {
         qDebug() << "Error deleting question:" << q.lastError().text();
     }
@@ -236,7 +246,9 @@ int QuestaoRepoSQLite::Contar() {
 QStringList QuestaoRepoSQLite::ListarImagens(int questaoId, const QString& tipo) {
     QStringList paths;
     QSqlQuery q(db_);
-    q.prepare("SELECT path FROM questao_imagens WHERE questao_id = :id AND tipo = :tipo ORDER BY ordem ASC, id ASC");
+    q.prepare(
+        "SELECT path FROM questao_imagens WHERE questao_id = :id AND tipo = :tipo ORDER BY ordem "
+        "ASC, id ASC");
     q.bindValue(":id", questaoId);
     q.bindValue(":tipo", tipo);
     if (!q.exec()) {
@@ -249,15 +261,15 @@ QStringList QuestaoRepoSQLite::ListarImagens(int questaoId, const QString& tipo)
     return paths;
 }
 
-void QuestaoRepoSQLite::SalvarImagens(int questaoId, const QStringList& paths, const QString& tipo) {
+void QuestaoRepoSQLite::SalvarImagens(int questaoId, const QStringList& paths,
+                                      const QString& tipo) {
     if (questaoId <= 0 || paths.isEmpty()) {
         return;
     }
     QSqlQuery q(db_);
     q.prepare(
         "INSERT INTO questao_imagens (questao_id, tipo, path, ordem, criada_em) "
-        "VALUES (:id, :tipo, :path, :ordem, :criada_em)"
-    );
+        "VALUES (:id, :tipo, :path, :ordem, :criada_em)");
     int ordem = 0;
     for (const auto& path : paths) {
         q.bindValue(":id", questaoId);
@@ -271,7 +283,8 @@ void QuestaoRepoSQLite::SalvarImagens(int questaoId, const QStringList& paths, c
     }
 }
 
-void QuestaoRepoSQLite::SincronizarImagens(int questaoId, const QStringList& paths, const QString& tipo) {
+void QuestaoRepoSQLite::SincronizarImagens(int questaoId, const QStringList& paths,
+                                           const QString& tipo) {
     const QStringList atuais = ListarImagens(questaoId, tipo);
     for (const auto& path : atuais) {
         if (!paths.contains(path)) {
