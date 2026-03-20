@@ -12,16 +12,16 @@ class QComboBox;
 class SettingsPage : public QWidget {
     Q_OBJECT
 
-public:
+   public:
     explicit SettingsPage(QWidget* parent = nullptr);
 
-signals:
+   signals:
     void themeChanged(const QString& themeId);
     void removeAllRequested();
     void importKeepRequested();
     void languageChanged(const QString& languageId);
 
-private:
+   private:
     void loadCurrentTheme();
     void applyThemeSelection(const QString& themeId);
     void loadCurrentLanguage();

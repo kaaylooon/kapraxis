@@ -16,7 +16,7 @@ namespace repo {
 namespace {
 QList<Questao> s_cacheBasico;
 bool s_cacheBasicoValid = false;
-}
+}  // namespace
 
 QuestaoRepoSQLite::QuestaoRepoSQLite() {
     const QString appDataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
@@ -25,11 +25,9 @@ QuestaoRepoSQLite::QuestaoRepoSQLite() {
     }
 
     const QString appDataDbPath =
-        appDataDir.isEmpty() ? QString("questoes.db")
-                             : QDir(appDataDir).filePath("questoes.db");
+        appDataDir.isEmpty() ? QString("questoes.db") : QDir(appDataDir).filePath("questoes.db");
 
-    if (appDataDbPath != "questoes.db" &&
-        !QFile::exists(appDataDbPath) &&
+    if (appDataDbPath != "questoes.db" && !QFile::exists(appDataDbPath) &&
         QFile::exists("questoes.db")) {
         QFile::copy("questoes.db", appDataDbPath);
     }

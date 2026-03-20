@@ -1,24 +1,23 @@
 #include "InicioPage.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QPushButton>
+
+#include <QDate>
 #include <QFrame>
 #include <QGroupBox>
-#include <QDate>
-#include <QPainter>
-#include <QStyleOption>
+#include <QHBoxLayout>
+#include <QLabel>
 #include <QObject>
+#include <QPainter>
+#include <QPushButton>
+#include <QStyleOption>
+#include <QVBoxLayout>
 
-#include "../repo/questao_repo_sqlite.h"
 #include "../repo/StudyStatsStore.h"
+#include "../repo/questao_repo_sqlite.h"
 
 namespace {
 class StudyChartWidget : public QWidget {
-public:
-    explicit StudyChartWidget(QWidget* parent = nullptr)
-        : QWidget(parent)
-    {
+   public:
+    explicit StudyChartWidget(QWidget* parent = nullptr) : QWidget(parent) {
         setMinimumHeight(160);
     }
 
@@ -28,7 +27,7 @@ public:
         update();
     }
 
-protected:
+   protected:
     void paintEvent(QPaintEvent*) override {
         QPainter p(this);
         p.setRenderHint(QPainter::Antialiasing, true);
@@ -78,7 +77,7 @@ protected:
         }
     }
 
-private:
+   private:
     QVector<int> dataSeconds;
     QStringList dataLabels;
 };
@@ -97,11 +96,9 @@ static QString formatDuration(int seconds) {
     return QString("%1s").arg(segs);
 }
 
-} // namespace
+}  // namespace
 
-InicioPage::InicioPage(QWidget* parent)
-    : QWidget(parent)
-{
+InicioPage::InicioPage(QWidget* parent) : QWidget(parent) {
     repo = new kapraxis::repo::QuestaoRepoSQLite;
 
     auto* rootLayout = new QVBoxLayout(this);
@@ -163,8 +160,8 @@ InicioPage::InicioPage(QWidget* parent)
     chartLayout->setContentsMargins(16, 14, 16, 16);
     chartLayout->setSpacing(10);
 
-    //auto* chartTitle = new QLabel("");
-    //chartTitle->setObjectName("sectionTitle");
+    // auto* chartTitle = new QLabel("");
+    // chartTitle->setObjectName("sectionTitle");
 
     chartWidget = new StudyChartWidget();
     chartWidget->setObjectName("studyChart");
@@ -172,7 +169,7 @@ InicioPage::InicioPage(QWidget* parent)
     chartWidget->setAccessibleName(tr("Study chart"));
     chartWidget->setAccessibleDescription(tr("Shows study time over the last week."));
 
-    //chartLayout->addWidget(chartTitle);
+    // chartLayout->addWidget(chartTitle);
     chartLayout->addWidget(chartWidget);
 
     rootLayout->addWidget(chartFrame, 1);
@@ -180,14 +177,12 @@ InicioPage::InicioPage(QWidget* parent)
     rootLayout->addStretch();
 }
 
-void InicioPage::showEvent(QShowEvent* event)
-{
+void InicioPage::showEvent(QShowEvent* event) {
     atualizarResumo();
     QWidget::showEvent(event);
 }
 
-void InicioPage::atualizarResumo()
-{
+void InicioPage::atualizarResumo() {
     const int totalQuestoes = repo->Contar();
     lblTotalQuestoes->setText(QString::number(totalQuestoes));
 

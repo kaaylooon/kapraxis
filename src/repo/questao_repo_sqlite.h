@@ -12,7 +12,7 @@ namespace kapraxis {
 namespace repo {
 
 class QuestaoRepoSQLite {
-public:
+   public:
     QuestaoRepoSQLite();
 
     void Salvar(const Questao& qst);
@@ -27,16 +27,16 @@ public:
     QList<Questao> ListarBasico();
     QList<Questao> ListarBasicoCached();
     static void InvalidarCacheBasico();
-    //QList<Questao> buscarPorTag(const QString& tag);
+    // QList<Questao> buscarPorTag(const QString& tag);
 
-private:
+   private:
     void Init();
     QStringList ListarImagens(int questaoId, const QString& tipo);
     void SalvarImagens(int questaoId, const QStringList& paths, const QString& tipo);
     void SincronizarImagens(int questaoId, const QStringList& paths, const QString& tipo);
     void ExcluirImagens(int questaoId);
-    
-private:
+
+   private:
     QSqlDatabase db_;  // Declare aqui
 };
 

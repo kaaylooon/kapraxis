@@ -1,12 +1,13 @@
 #include "AppWindow.h"
+
 #include <QAbstractAnimation>
 #include <QApplication>
+#include <QEasingCurve>
 #include <QFile>
 #include <QFrame>
 #include <QGraphicsOpacityEffect>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QEasingCurve>
 #include <QMessageBox>
 #include <QPropertyAnimation>
 #include <QSettings>
@@ -14,21 +15,19 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
+#include "../ui/BlocosPage.h"
 #include "../ui/InicioPage.h"
 #include "../ui/QuestoesPage.h"
-#include "../ui/BlocosPage.h"
 #include "../ui/SettingsPage.h"
 
-AppWindow::AppWindow(QWidget* parent)
-    : QMainWindow(parent)
-{
+AppWindow::AppWindow(QWidget* parent) : QMainWindow(parent) {
     carregarIdioma();
 
     auto* central = new QWidget(this);
     auto* mainLayout = new QHBoxLayout(central);
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(0);
-    
+
     sidebar = new QListWidget;
     sidebar->setObjectName("sidebar");
     sidebar->setFocusPolicy(Qt::NoFocus);
@@ -40,14 +39,9 @@ AppWindow::AppWindow(QWidget* parent)
 
     QStringList labelsTop = {"", "", ""};
     QStringList labelsBottom = {""};
-    QStringList topIcons = {
-        ":/resources/icons/house.svg",
-        ":/resources/icons/list-ul.svg",
-        ":/resources/icons/stopwatch.svg"
-    };
-    QStringList bottomIcons = {
-        ":/resources/icons/bookmark.svg"
-    };
+    QStringList topIcons = {":/resources/icons/house.svg", ":/resources/icons/list-ul.svg",
+                            ":/resources/icons/stopwatch.svg"};
+    QStringList bottomIcons = {":/resources/icons/bookmark.svg"};
 
     const int itemHeight = 54;
     auto addPageItem = [&](const QString& text, const QString& iconPath, int pageIndex) {
@@ -72,14 +66,14 @@ AppWindow::AppWindow(QWidget* parent)
         const int pageIndex = labelsTop.size() + i;
         addPageItem(labelsBottom[i], bottomIcons[i], pageIndex);
     }
-    
+
     pages = new QStackedWidget;
     pagesOpacityEffect = new QGraphicsOpacityEffect(pages);
     pagesOpacityEffect->setOpacity(1.0);
     pages->setGraphicsEffect(pagesOpacityEffect);
     pages->setAccessibleName(tr("Main content"));
     pages->setAccessibleDescription(tr("Shows the overview, questions, blocks, and settings."));
-    
+
     inicioPage = new InicioPage();
     pages->addWidget(inicioPage);
     questoesPage = new QuestoesPage();
@@ -93,19 +87,20 @@ AppWindow::AppWindow(QWidget* parent)
     questoesPage->setAccessibleName(tr("Questions page"));
     blocosPage->setAccessibleName(tr("Blocks page"));
     settingsPage->setAccessibleName(tr("Settings page"));
-    
+
     mainLayout->addWidget(sidebar, 1);
-    mainLayout->addWidget(pages, 10); 
-    
+    mainLayout->addWidget(pages, 10);
+
     setCentralWidget(central);
     setWindowTitle(tr("Kapraxis"));
     resize(1280, 720);
-    
-    connect(sidebar, &QListWidget::currentItemChanged, this, [this](QListWidgetItem* current, QListWidgetItem*) {
-        if (!current) return;
-        const int pageIndex = current->data(Qt::UserRole).toInt();
-        animatePageTransition(pageIndex);
-    });
+
+    connect(sidebar, &QListWidget::currentItemChanged, this,
+            [this](QListWidgetItem* current, QListWidgetItem*) {
+                if (!current) return;
+                const int pageIndex = current->data(Qt::UserRole).toInt();
+                animatePageTransition(pageIndex);
+            });
 
     {
         QSignalBlocker blocker(sidebar);
@@ -115,12 +110,13 @@ AppWindow::AppWindow(QWidget* parent)
 
     carregarEstiloGlobal();
 
-    connect(blocosPage, &BlocosPage::studyStatsUpdated,
-            inicioPage, &InicioPage::atualizarResumo);
+    connect(blocosPage, &BlocosPage::studyStatsUpdated, inicioPage, &InicioPage::atualizarResumo);
 
     connect(settingsPage, &SettingsPage::themeChanged, this, &AppWindow::aplicarTema);
-    connect(settingsPage, &SettingsPage::removeAllRequested, questoesPage, &QuestoesPage::excluirTodasQuestoes);
-    connect(settingsPage, &SettingsPage::importKeepRequested, questoesPage, &QuestoesPage::importarKeepJson);
+    connect(settingsPage, &SettingsPage::removeAllRequested, questoesPage,
+            &QuestoesPage::excluirTodasQuestoes);
+    connect(settingsPage, &SettingsPage::importKeepRequested, questoesPage,
+            &QuestoesPage::importarKeepJson);
     connect(settingsPage, &SettingsPage::languageChanged, this, &AppWindow::aplicarIdioma);
 }
 
@@ -223,9 +219,8 @@ void AppWindow::animatePageTransition(int pageIndex) {
         fadeIn->setStartValue(0.35);
         fadeIn->setEndValue(1.0);
         fadeIn->setEasingCurve(QEasingCurve::OutCubic);
-        connect(fadeIn, &QPropertyAnimation::finished, this, [this]() {
-            pageTransitionInProgress = false;
-        });
+        connect(fadeIn, &QPropertyAnimation::finished, this,
+                [this]() { pageTransitionInProgress = false; });
         fadeIn->start(QAbstractAnimation::DeleteWhenStopped);
     });
     fadeOut->start(QAbstractAnimation::DeleteWhenStopped);

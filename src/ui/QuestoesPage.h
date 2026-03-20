@@ -1,19 +1,19 @@
 #ifndef KAPRAXIS_UI_QUESTOESPAGE_H_
 #define KAPRAXIS_UI_QUESTOESPAGE_H_
 
-#include <QWidget>
+#include <QComboBox>
+#include <QLabel>
 #include <QList>
 #include <QListWidget>
 #include <QPushButton>
-#include <QLabel>
-#include <QTextEdit>
 #include <QRadioButton>
-#include <QSpinBox>
-#include <QComboBox>
 #include <QShortcut>
-#include <QTimer>
+#include <QSpinBox>
 #include <QString>
 #include <QStringList>
+#include <QTextEdit>
+#include <QTimer>
+#include <QWidget>
 
 #include "../domain/Questao.h"
 
@@ -21,7 +21,7 @@ namespace kapraxis {
 namespace repo {
 class QuestaoRepoSQLite;
 }
-}
+}  // namespace kapraxis
 
 class QListWidget;
 class QLabel;
@@ -37,17 +37,17 @@ class QScrollBar;
 
 class QuestoesPage : public QWidget {
     Q_OBJECT
-public:
+   public:
     explicit QuestoesPage(QWidget* parent = nullptr);
     void excluirTodasQuestoes();
     void importarKeepJson();
 
-protected:
+   protected:
     void keyPressEvent(QKeyEvent* event) override;
     void showEvent(QShowEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
 
-private slots:
+   private slots:
     void adicionarQuestao();
     void editarQuestao();
     void excluirQuestao();
@@ -60,7 +60,7 @@ private slots:
     void buscarQuestoes(const QString& texto);
     void focarBusca();
 
-private:
+   private:
     void recarregar();
     void setupShortcuts();
     void destacarItem(QListWidgetItem* item);
@@ -69,9 +69,7 @@ private:
     void iniciarPaginacao(const QList<Questao>& list, const QString& agrupamento);
     void carregarMais();
     void removerLoadingItem();
-    bool abrirDialogQuestao(Questao& ioQuestao,
-                            const QString& titulo,
-                            const QString& header,
+    bool abrirDialogQuestao(Questao& ioQuestao, const QString& titulo, const QString& header,
                             const QString& actionLabel);
     kapraxis::repo::QuestaoRepoSQLite* repo;
 
@@ -79,14 +77,14 @@ private:
     QPushButton* btnAdd;
     QPushButton* btnEdit;
     QPushButton* btnDelete;
-    
+
     QLabel* lblEnunciado;
     QLabel* lblResposta;
     QLabel* lblTags;
     QLabel* lblData;
     QLabel* lblTitle;
     QLabel* lblInfo;
-    
+
     ClipboardTextEdit* txtEnunciado;
     ClipboardTextEdit* txtResposta;
     QGroupBox* detailsPanelGroup;

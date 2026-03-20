@@ -8,13 +8,13 @@
 class ClipboardTextEdit : public QTextEdit {
     Q_OBJECT
 
-public:
+   public:
     explicit ClipboardTextEdit(QWidget* parent = nullptr);
 
-signals:
+   signals:
     void imagePasted(const QImage& image);
 
-protected:
+   protected:
     void insertFromMimeData(const QMimeData* source) override;
 };
 

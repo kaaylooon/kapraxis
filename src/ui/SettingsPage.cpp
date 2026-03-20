@@ -4,15 +4,14 @@
 #include <QComboBox>
 #include <QFrame>
 #include <QGroupBox>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QSettings>
-#include <QHBoxLayout>
 #include <QVBoxLayout>
 
-SettingsPage::SettingsPage(QWidget* parent)
-    : QWidget(parent) {
+SettingsPage::SettingsPage(QWidget* parent) : QWidget(parent) {
     auto* layout = new QVBoxLayout(this);
     layout->setSpacing(12);
 
@@ -34,10 +33,8 @@ SettingsPage::SettingsPage(QWidget* parent)
     themeGroup = new QButtonGroup(this);
     themeGroup->setExclusive(true);
 
-    auto addThemeCard = [&](const QString& title,
-                            const QString& subtitleText,
-                            const QString& themeId,
-                            const QStringList& swatches) {
+    auto addThemeCard = [&](const QString& title, const QString& subtitleText,
+                            const QString& themeId, const QStringList& swatches) {
         auto* card = new QPushButton();
         card->setCheckable(true);
         card->setObjectName("themeCard");
@@ -73,9 +70,7 @@ SettingsPage::SettingsPage(QWidget* parent)
         themeGroup->addButton(card);
         appearanceLayout->addWidget(card);
 
-        connect(card, &QPushButton::clicked, [this, themeId]() {
-            applyThemeSelection(themeId);
-        });
+        connect(card, &QPushButton::clicked, [this, themeId]() { applyThemeSelection(themeId); });
     };
 
     addThemeCard(tr("Dark"), tr("High contrast focus mode"), "dark",
@@ -86,7 +81,7 @@ SettingsPage::SettingsPage(QWidget* parent)
                  {"#f2f2f2", "#e6e6e6", "#d4d4d4", "#1f1f1f"});
     addThemeCard(tr("Palette"), tr("Palette-inspired appearance"), "palette",
                  {"#0D1017", "#10141C", "#E6C08A", "#39BAE6"});
-    
+
     appearanceLayout->addSpacing(6);
     lblInfo = new QLabel(tr("Theme changes are applied instantly."));
     appearanceLayout->addWidget(lblInfo);
@@ -112,8 +107,8 @@ SettingsPage::SettingsPage(QWidget* parent)
     languageLayout->addWidget(lblLanguageNote);
     layout->addWidget(languageGroup);
 
-    connect(languageCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &SettingsPage::handleLanguageSelectionChanged);
+    connect(languageCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
+            &SettingsPage::handleLanguageSelectionChanged);
     loadCurrentLanguage();
 
     auto* dangerGroup = new QGroupBox(tr("Danger zone"));

@@ -3,8 +3,7 @@
 #include <QImage>
 #include <QMimeData>
 
-ClipboardTextEdit::ClipboardTextEdit(QWidget* parent)
-    : QTextEdit(parent) {}
+ClipboardTextEdit::ClipboardTextEdit(QWidget* parent) : QTextEdit(parent) {}
 
 void ClipboardTextEdit::insertFromMimeData(const QMimeData* source) {
     if (source && source->hasImage()) {

@@ -4,8 +4,8 @@
 #include <QGraphicsOpacityEffect>
 #include <QMainWindow>
 #include <QPropertyAnimation>
-#include <QTranslator>
 #include <QString>
+#include <QTranslator>
 #include <QVector>
 
 class QListWidget;
@@ -16,16 +16,15 @@ class BlocosPage;
 class SettingsPage;
 class QuestoesPage;
 
-class AppWindow : public QMainWindow
-{
+class AppWindow : public QMainWindow {
     Q_OBJECT
-public:
+   public:
     explicit AppWindow(QWidget* parent = nullptr);
 
-protected:
+   protected:
     void resizeEvent(QResizeEvent* event) override;
 
-private:
+   private:
     void carregarEstiloGlobal();
     void aplicarTema(const QString& themeId);
     void atualizarSpacerSidebar();
@@ -35,7 +34,7 @@ private:
     void applyLanguage(const QString& languageId);
     void aplicarIdioma(const QString& languageId);
 
-private:
+   private:
     QListWidget* sidebar = nullptr;
     QStackedWidget* pages = nullptr;
     InicioPage* inicioPage = nullptr;

@@ -1,8 +1,8 @@
 #ifndef KAPRAXIS_UI_INICIOPAGE_H_
 #define KAPRAXIS_UI_INICIOPAGE_H_
 
-#include <QWidget>
 #include <QLabel>
+#include <QWidget>
 
 class QFrame;
 class QVBoxLayout;
@@ -13,21 +13,20 @@ namespace kapraxis {
 namespace repo {
 class QuestaoRepoSQLite;
 }
-}
+}  // namespace kapraxis
 
-class InicioPage : public QWidget
-{
+class InicioPage : public QWidget {
     Q_OBJECT
-public:
+   public:
     explicit InicioPage(QWidget* parent = nullptr);
 
-protected:
+   protected:
     void showEvent(QShowEvent* event) override;
 
-public slots:
+   public slots:
     void atualizarResumo();
 
-private:
+   private:
     kapraxis::repo::QuestaoRepoSQLite* repo;
     QLabel* lblTotalQuestoes;
     QLabel* lblHorasEstudo;

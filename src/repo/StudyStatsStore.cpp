@@ -6,8 +6,7 @@
 #include <QJsonObject>
 #include <QStandardPaths>
 
-QString StudyStatsStore::filePath()
-{
+QString StudyStatsStore::filePath() {
     const QString dirPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir dir(dirPath);
     if (!dir.exists()) {
@@ -16,8 +15,7 @@ QString StudyStatsStore::filePath()
     return dir.filePath("study_stats.json");
 }
 
-QMap<QString, int> StudyStatsStore::loadDailySeconds()
-{
+QMap<QString, int> StudyStatsStore::loadDailySeconds() {
     QMap<QString, int> totals;
     const QMap<QString, QMap<QString, int>> byDisc = loadDailySecondsByDiscipline();
     for (auto it = byDisc.begin(); it != byDisc.end(); ++it) {
@@ -31,8 +29,7 @@ QMap<QString, int> StudyStatsStore::loadDailySeconds()
     return totals;
 }
 
-QMap<QString, QMap<QString, int>> StudyStatsStore::loadDailySecondsByDiscipline()
-{
+QMap<QString, QMap<QString, int>> StudyStatsStore::loadDailySecondsByDiscipline() {
     QMap<QString, QMap<QString, int>> map;
     QFile file(filePath());
     if (!file.exists()) {
@@ -75,8 +72,7 @@ QMap<QString, QMap<QString, int>> StudyStatsStore::loadDailySecondsByDiscipline(
     return map;
 }
 
-void StudyStatsStore::saveDailySeconds(const QMap<QString, QMap<QString, int>>& map)
-{
+void StudyStatsStore::saveDailySeconds(const QMap<QString, QMap<QString, int>>& map) {
     QJsonObject daily;
     for (auto it = map.begin(); it != map.end(); ++it) {
         QJsonObject perDisc;
@@ -98,8 +94,7 @@ void StudyStatsStore::saveDailySeconds(const QMap<QString, QMap<QString, int>>& 
     file.close();
 }
 
-void StudyStatsStore::addSeconds(const QDate& date, const QString& disciplina, int seconds)
-{
+void StudyStatsStore::addSeconds(const QDate& date, const QString& disciplina, int seconds) {
     if (seconds <= 0) return;
     const QString key = date.toString("yyyy-MM-dd");
     QMap<QString, QMap<QString, int>> map = loadDailySecondsByDiscipline();

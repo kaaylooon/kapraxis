@@ -1,46 +1,46 @@
 #include "QuestoesPage.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QListWidget>
-#include <QPushButton>
-#include <QDateTime>
-#include <QLabel>
-#include <QTextEdit>
-#include <QMessageBox>
-#include <QGroupBox>
-#include <QFormLayout>
-#include <QFrame>
-#include <QFile>
-#include <QLineEdit>
+
+#include <QColor>
 #include <QComboBox>
-#include <QPainter>
-#include <QShortcut>
-#include <QTimer>
-#include <QTime>
-#include <QKeyEvent>
-#include <QScrollBar>
-#include <QPropertyAnimation>
-#include <QEasingCurve>
-#include <QParallelAnimationGroup>
+#include <QDate>
+#include <QDateTime>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QDir>
+#include <QEasingCurve>
+#include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QFile>
-#include <QDir>
+#include <QFormLayout>
+#include <QFrame>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QImageReader>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QLineEdit>
+#include <QListWidget>
+#include <QLocale>
+#include <QMessageBox>
+#include <QPainter>
+#include <QParallelAnimationGroup>
 #include <QPixmap>
 #include <QPixmapCache>
-#include <QSet>
-#include <QDate>
-#include <QLocale>
-#include <QStackedWidget>
-#include <QScrollArea>
+#include <QPropertyAnimation>
+#include <QPushButton>
 #include <QResizeEvent>
-#include <QColor>
-#include <QImageReader>
+#include <QScrollArea>
+#include <QScrollBar>
+#include <QSet>
+#include <QShortcut>
+#include <QStackedWidget>
+#include <QTextEdit>
+#include <QTime>
+#include <QTimer>
+#include <QVBoxLayout>
 
 #include "../repo/questao_repo_sqlite.h"
 #include "../utils/ImageStore.h"
@@ -53,20 +53,22 @@ static QString tagChipStyle(const QString& tag) {
     const int hue = static_cast<int>(h % 360);
     const QColor border = QColor::fromHsl(hue, 120, 120);
     const QColor text = QColor::fromHsl(hue, 180, 140);
-    return QString("border:1px solid %1;color:%2;font-weight:700;")
-        .arg(border.name(), text.name());
+    return QString("border:1px solid %1;color:%2;font-weight:700;").arg(border.name(), text.name());
 }
 
 static QString buildTagsHtml(const QStringList& tags) {
     if (tags.isEmpty()) {
-        return "<span style='padding: 6px 14px; border-radius: 999px; border: 1px solid #3e3e3e; color: #cfcfcf; font-weight:700;'>Sem tags</span>";
+        return "<span style='padding: 6px 14px; border-radius: 999px; border: 1px solid #3e3e3e; "
+               "color: #cfcfcf; font-weight:700;'>Sem tags</span>";
     }
 
     QString html;
     for (const auto& tag : tags) {
         const QString style = tagChipStyle(tag);
-        html += QString("<span style='padding: 6px 14px; border-radius: 999px; %1 margin-right: 8px; margin-bottom: 6px; display: inline-block;'>%2</span>")
-            .arg(style, tag.toHtmlEscaped());
+        html += QString(
+                    "<span style='padding: 6px 14px; border-radius: 999px; %1 margin-right: 8px; "
+                    "margin-bottom: 6px; display: inline-block;'>%2</span>")
+                    .arg(style, tag.toHtmlEscaped());
     }
     return html;
 }
@@ -122,7 +124,8 @@ static void clearLayout(QVBoxLayout* layout) {
     }
 }
 
-static void renderImageListFullWidth(QScrollArea* scroll, QVBoxLayout* layout, const QStringList& paths) {
+static void renderImageListFullWidth(QScrollArea* scroll, QVBoxLayout* layout,
+                                     const QStringList& paths) {
     clearLayout(layout);
 
     const int viewportWidth = scroll->viewport()->width();
@@ -178,8 +181,10 @@ static QStringList keepLabelsToTags(const QJsonArray& labels) {
 }
 
 static QDateTime keepTimestampToDateTime(const QJsonObject& obj) {
-    const qint64 created = static_cast<qint64>(obj.value("createdTimestampUsec").toVariant().toLongLong());
-    const qint64 edited = static_cast<qint64>(obj.value("userEditedTimestampUsec").toVariant().toLongLong());
+    const qint64 created =
+        static_cast<qint64>(obj.value("createdTimestampUsec").toVariant().toLongLong());
+    const qint64 edited =
+        static_cast<qint64>(obj.value("userEditedTimestampUsec").toVariant().toLongLong());
     const qint64 usec = edited > 0 ? edited : created;
     if (usec <= 0) {
         return QDateTime::currentDateTime();
@@ -237,13 +242,15 @@ static QPixmap loadThumbnail(const QString& path, int size) {
     if (img.isNull()) {
         QPixmap fallback(path);
         if (!fallback.isNull()) {
-            cached = fallback.scaled(size, size, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+            cached = fallback.scaled(size, size, Qt::KeepAspectRatioByExpanding,
+                                     Qt::SmoothTransformation);
             QPixmapCache::insert(key, cached);
             return cached;
         }
         return QPixmap();
     }
-    cached = QPixmap::fromImage(img).scaled(size, size, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+    cached = QPixmap::fromImage(img).scaled(size, size, Qt::KeepAspectRatioByExpanding,
+                                            Qt::SmoothTransformation);
     QPixmapCache::insert(key, cached);
     return cached;
 }
@@ -257,31 +264,27 @@ static QStringList coletarPaths(QListWidget* list) {
     return paths;
 }
 
-QuestoesPage::QuestoesPage(QWidget* parent)
-    : QWidget(parent)
-{
+QuestoesPage::QuestoesPage(QWidget* parent) : QWidget(parent) {
     repo = new krepo::QuestaoRepoSQLite;
-    
+
     setupShortcuts();
 
-    //carregarEstilo();
+    // carregarEstilo();
 
     auto* mainLayout = new QVBoxLayout(this);
-    mainLayout->setSpacing(10); 
+    mainLayout->setSpacing(10);
 
     autoSaveTimer = new QTimer(this);
     autoSaveTimer->setSingleShot(true);
     autoSaveTimer->setInterval(1000);
 
-    
     auto* filterGroup = new QGroupBox();
     auto* filterLayout = new QHBoxLayout(filterGroup);
-    
+
     txtBusca = new QLineEdit();
     txtBusca->setObjectName("txtBusca");
     txtBusca->setPlaceholderText("Buscar...");
     txtBusca->setClearButtonEnabled(false);
-
 
     comboFilterTag = new QComboBox();
     comboFilterTag->setObjectName("comboFilterTag");
@@ -308,17 +311,17 @@ QuestoesPage::QuestoesPage(QWidget* parent)
     filterLayout->addStretch();
     filterLayout->addWidget(comboFilterTag);
     filterLayout->addWidget(comboGroupBy);
-    
+
     auto* listPanelGroup = new QGroupBox();
     listPanelGroup->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     auto* listPanelLayout = new QVBoxLayout(listPanelGroup);
-    
+
     lista = new QListWidget();
     lista->setObjectName("lista");
     lista->setSelectionMode(QAbstractItemView::SingleSelection);
     lista->setViewMode(QListView::ListMode);
     lista->setResizeMode(QListView::Adjust);
-    //lista->setGridSize(QSize(200, 150));
+    // lista->setGridSize(QSize(200, 150));
     lista->setSpacing(8);
     lista->setWordWrap(true);
     lista->setUniformItemSizes(false);
@@ -326,9 +329,9 @@ QuestoesPage::QuestoesPage(QWidget* parent)
     lista->setContentsMargins(0, 0, 0, 0);
     lista->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     lista->setDropIndicatorShown(false);
-    
+
     listPanelLayout->addWidget(lista);
-    
+
     detailsPanelGroup = new QGroupBox();
     detailsPanelGroup->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     auto* detailsPanelLayout = new QVBoxLayout(detailsPanelGroup);
@@ -388,15 +391,15 @@ QuestoesPage::QuestoesPage(QWidget* parent)
     lblTags->setTextFormat(Qt::RichText);
     lblData = new QLabel("--/--/-lblData---");
     lblData->setObjectName("lblData");
-    
-    lblInfo = new QLabel(""); 
+
+    lblInfo = new QLabel("");
     lblInfo->setObjectName("lblData");
-    
+
     infoLayout->addWidget(lblTags);
     infoLayout->addStretch();
     infoLayout->addWidget(lblData);
     infoLayout->addWidget(lblInfo);
-    
+
     detailsPanelLayout->addWidget(enunciadoGroup);
     detailsPanelLayout->addWidget(imagensEnunciadoGroup);
     detailsPanelLayout->addWidget(btnCampoAdicional);
@@ -404,7 +407,7 @@ QuestoesPage::QuestoesPage(QWidget* parent)
     detailsPanelLayout->addWidget(imagensRespostaGroup);
     detailsPanelLayout->addStretch();
     detailsPanelLayout->addWidget(infoGroup);
-    
+
     auto* buttonGroup = new QGroupBox();
     buttonGroup->setFlat(true);
     auto* buttonLayout = new QHBoxLayout(buttonGroup);
@@ -412,15 +415,15 @@ QuestoesPage::QuestoesPage(QWidget* parent)
     btnAdd = new QPushButton("Adicionar");
     btnAdd->setObjectName("btnAdd");
     btnAdd->setCursor(Qt::PointingHandCursor);
-    
+
     btnEdit = new QPushButton("Editar");
     btnEdit->setObjectName("btnEdit");
     btnEdit->setCursor(Qt::PointingHandCursor);
-    
+
     btnDelete = new QPushButton("Excluir");
     btnDelete->setObjectName("btnDelete");
     btnDelete->setCursor(Qt::PointingHandCursor);
-    
+
     buttonLayout->addStretch();
     buttonLayout->addWidget(btnAdd);
     buttonLayout->addWidget(btnEdit);
@@ -455,43 +458,37 @@ QuestoesPage::QuestoesPage(QWidget* parent)
     contentStack->addWidget(detailPage);
 
     mainLayout->addWidget(contentStack, 1);
-    
 
     connect(txtBusca, &QLineEdit::textChanged, this, &QuestoesPage::buscarQuestoes);
-    connect(btnAdd, &QPushButton::clicked,
-            this, &QuestoesPage::adicionarQuestao);
-    connect(btnEdit, &QPushButton::clicked,
-            this, &QuestoesPage::editarQuestao);
-    connect(btnDelete, &QPushButton::clicked,
-            this, &QuestoesPage::excluirQuestao);
-    connect(lista, &QListWidget::itemClicked,
-            this, &QuestoesPage::mostrarDetalhes);
-    connect(lista, &QListWidget::currentItemChanged, this, [this](QListWidgetItem* current, QListWidgetItem*) {
-        if (!current) {
-            detailsPanelGroup->setVisible(false);
-            contentStack->setCurrentWidget(listPage);
-            return;
-        }
-        detailsPanelGroup->setVisible(true);
-        mostrarDetalhes(current);
-    });
-    connect(comboFilterTag, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &QuestoesPage::filtrarQuestoes);
-    connect(comboGroupBy, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &QuestoesPage::filtrarQuestoes);
+    connect(btnAdd, &QPushButton::clicked, this, &QuestoesPage::adicionarQuestao);
+    connect(btnEdit, &QPushButton::clicked, this, &QuestoesPage::editarQuestao);
+    connect(btnDelete, &QPushButton::clicked, this, &QuestoesPage::excluirQuestao);
+    connect(lista, &QListWidget::itemClicked, this, &QuestoesPage::mostrarDetalhes);
+    connect(lista, &QListWidget::currentItemChanged, this,
+            [this](QListWidgetItem* current, QListWidgetItem*) {
+                if (!current) {
+                    detailsPanelGroup->setVisible(false);
+                    contentStack->setCurrentWidget(listPage);
+                    return;
+                }
+                detailsPanelGroup->setVisible(true);
+                mostrarDetalhes(current);
+            });
+    connect(comboFilterTag, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
+            &QuestoesPage::filtrarQuestoes);
+    connect(comboGroupBy, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
+            &QuestoesPage::filtrarQuestoes);
     connect(txtResposta, &QTextEdit::textChanged, [this]() {
         if (!lista->currentItem()) return;
         autoSaveTimer->start();
     });
 
     connect(autoSaveTimer, &QTimer::timeout, this, &QuestoesPage::salvarResposta);
-    connect(lista->verticalScrollBar(), &QScrollBar::valueChanged, this, [this](int) {
-        carregarMais();
-    });
+    connect(lista->verticalScrollBar(), &QScrollBar::valueChanged, this,
+            [this](int) { carregarMais(); });
 
-    connect(btnVoltarLista, &QPushButton::clicked, [this]() {
-        contentStack->setCurrentWidget(listPage);
-    });
+    connect(btnVoltarLista, &QPushButton::clicked,
+            [this]() { contentStack->setCurrentWidget(listPage); });
 
     connect(btnCampoAdicional, &QPushButton::clicked, [this]() {
         if (!lista->currentItem()) return;
@@ -500,12 +497,10 @@ QuestoesPage::QuestoesPage(QWidget* parent)
         if (q.id == 0) return;
 
         if (respostaGroup->isVisible()) {
-            const int resposta = QMessageBox::question(
-                this,
-                "Remover campo adicional",
-                "Deseja remover o campo adicional e apagar o conteudo?",
-                QMessageBox::Yes | QMessageBox::No
-            );
+            const int resposta =
+                QMessageBox::question(this, "Remover campo adicional",
+                                      "Deseja remover o campo adicional e apagar o conteudo?",
+                                      QMessageBox::Yes | QMessageBox::No);
             if (resposta != QMessageBox::Yes) {
                 return;
             }
@@ -514,7 +509,8 @@ QuestoesPage::QuestoesPage(QWidget* parent)
             repo->Atualizar(q);
             txtResposta->clear();
             detalheRespostaPaths.clear();
-            renderImageListFullWidth(scrollImagensResposta, respostaImagesLayout, detalheRespostaPaths);
+            renderImageListFullWidth(scrollImagensResposta, respostaImagesLayout,
+                                     detalheRespostaPaths);
             imagensRespostaGroup->setVisible(false);
             respostaGroup->setVisible(false);
             btnCampoAdicional->setText("Adicionar campo adicional");
@@ -552,18 +548,17 @@ QuestoesPage::QuestoesPage(QWidget* parent)
         repo->Atualizar(q);
         detalheEnunciadoPaths = q.enunciadoImagens;
         detalheRespostaPaths = q.respostaImagens;
-        renderImageListFullWidth(scrollImagensEnunciado, enunciadoImagesLayout, detalheEnunciadoPaths);
+        renderImageListFullWidth(scrollImagensEnunciado, enunciadoImagesLayout,
+                                 detalheEnunciadoPaths);
         renderImageListFullWidth(scrollImagensResposta, respostaImagesLayout, detalheRespostaPaths);
         imagensEnunciadoGroup->setVisible(!detalheEnunciadoPaths.isEmpty());
         imagensRespostaGroup->setVisible(!detalheRespostaPaths.isEmpty());
     };
 
-    connect(txtEnunciado, &ClipboardTextEdit::imagePasted, [addImageToCurrent](const QImage& image) {
-        addImageToCurrent(image, "enunciado");
-    });
-    connect(txtResposta, &ClipboardTextEdit::imagePasted, [addImageToCurrent](const QImage& image) {
-        addImageToCurrent(image, "resposta");
-    });
+    connect(txtEnunciado, &ClipboardTextEdit::imagePasted,
+            [addImageToCurrent](const QImage& image) { addImageToCurrent(image, "enunciado"); });
+    connect(txtResposta, &ClipboardTextEdit::imagePasted,
+            [addImageToCurrent](const QImage& image) { addImageToCurrent(image, "resposta"); });
 
     detailsPanelGroup->setVisible(false);
     contentStack->setCurrentWidget(listPage);
@@ -575,7 +570,7 @@ void QuestoesPage::adicionarQuestao() {
     if (!abrirDialogQuestao(q, "New question", "Add question", "Save")) {
         return;
     }
-    
+
     repo->Salvar(q);
     krepo::QuestaoRepoSQLite::InvalidarCacheBasico();
     recarregar();
@@ -604,18 +599,18 @@ void QuestoesPage::salvarResposta() {
     QListWidgetItem* item = lista->currentItem();
     if (!item) return;
     if (!respostaGroup->isVisible()) return;
-    
+
     int id = item->data(Qt::UserRole).toInt();
     Questao q = repo->BuscarPorId(id);
-    
+
     if (q.id != 0) {
         q.resposta = txtResposta->toPlainText();
         repo->Atualizar(q);
-        
+
         // Atualiza indicador visual na lista
         bool temResposta = !q.resposta.isEmpty();
         item->setData(Qt::UserRole + 2, temResposta);
-        
+
         // Feedback sutil
         lblInfo->setText("+ " + QTime::currentTime().toString("hh:mm:ss"));
     }
@@ -627,15 +622,11 @@ void QuestoesPage::focarBusca() {
 }
 
 void QuestoesPage::destacarItem(QListWidgetItem* item) {
-    if(!item) return;
+    if (!item) return;
 
-    QTimer::singleShot(100, [item]() {
-        item->setBackground(QColor(254, 239, 195));
-    });
-    
-    QTimer::singleShot(800, [item]() {
-        item->setBackground(QBrush());
-    });
+    QTimer::singleShot(100, [item]() { item->setBackground(QColor(254, 239, 195)); });
+
+    QTimer::singleShot(800, [item]() { item->setBackground(QBrush()); });
 }
 
 void QuestoesPage::buscarQuestoes(const QString& texto) {
@@ -643,7 +634,7 @@ void QuestoesPage::buscarQuestoes(const QString& texto) {
         recarregar();
         return;
     }
-    
+
     QSignalBlocker blocker(lista->verticalScrollBar());
     loadingItem = nullptr;
     lista->clear();
@@ -652,7 +643,7 @@ void QuestoesPage::buscarQuestoes(const QString& texto) {
     renderGroupMode.clear();
     renderCurrentGroup.clear();
     const auto todasQuestoes = repo->ListarBasicoCached();
-    
+
     for (const auto& q : todasQuestoes) {
         if (q.enunciado.contains(texto, Qt::CaseInsensitive) ||
             q.resposta.contains(texto, Qt::CaseInsensitive) ||
@@ -663,16 +654,15 @@ void QuestoesPage::buscarQuestoes(const QString& texto) {
     iniciarPaginacao(renderQueue, QString());
 }
 
-
 void QuestoesPage::editarQuestao() {
     QListWidgetItem* item = lista->currentItem();
     if (!item) return;
 
     int id = item->data(Qt::UserRole).toInt();
-    
+
     Questao questao = repo->BuscarPorId(id);
 
-    if (questao.id == 0) return; 
+    if (questao.id == 0) return;
 
     if (!abrirDialogQuestao(questao, "Edit question", "Edit question", "Save changes")) {
         return;
@@ -686,14 +676,13 @@ void QuestoesPage::editarQuestao() {
 void QuestoesPage::excluirQuestao() {
     QListWidgetItem* item = lista->currentItem();
     if (!item) return;
-    
+
     int id = item->data(Qt::UserRole).toInt();
 
-    int resposta = QMessageBox::question(
-        this, tr("Confirm deletion"),
-        tr("Are you sure you want to delete this question?"),
-        QMessageBox::Yes | QMessageBox::No);
-    
+    int resposta = QMessageBox::question(this, tr("Confirm deletion"),
+                                         tr("Are you sure you want to delete this question?"),
+                                         QMessageBox::Yes | QMessageBox::No);
+
     if (resposta == QMessageBox::Yes) {
         repo->Excluir(id);
         krepo::QuestaoRepoSQLite::InvalidarCacheBasico();
@@ -706,7 +695,7 @@ void QuestoesPage::mostrarDetalhes(QListWidgetItem* item) {
     if (item->data(Qt::UserRole + 99).toBool()) return;
     detailsPanelGroup->setVisible(true);
     contentStack->setCurrentWidget(detailPage);
-    
+
     int id = item->data(Qt::UserRole).toInt();
     const Questao q = repo->BuscarPorId(id);
     if (q.id == 0) return;
@@ -725,7 +714,8 @@ void QuestoesPage::mostrarDetalhes(QListWidgetItem* item) {
 
     const bool hasResposta = !q.resposta.trimmed().isEmpty() || !q.respostaImagens.isEmpty();
     respostaGroup->setVisible(hasResposta);
-    btnCampoAdicional->setText(hasResposta ? "Remover campo adicional" : "Adicionar campo adicional");
+    btnCampoAdicional->setText(hasResposta ? "Remover campo adicional"
+                                           : "Adicionar campo adicional");
 }
 
 void QuestoesPage::filtrarQuestoes(int index) {
@@ -736,21 +726,21 @@ void QuestoesPage::recarregar() {
     QSignalBlocker blocker(lista->verticalScrollBar());
     loadingItem = nullptr;
     lista->clear();
-    
+
     renderQueue.clear();
     renderIndex = 0;
     renderGroupMode.clear();
     renderCurrentGroup.clear();
     const auto todasQuestoes = repo->ListarBasicoCached();
     QList<Questao> questoesFiltradas;
-    
+
     QString filtro = comboFilterTag->currentData().toString();
     const QString agrupamento = comboGroupBy->currentData().toString();
     const QDate hoje = QDate::currentDate();
-    
+
     for (const auto& q : todasQuestoes) {
         bool incluir = true;
-        
+
         if (filtro == "sem_resposta" && !q.resposta.trimmed().isEmpty()) {
             incluir = false;
         } else if (filtro == "com_resposta" && q.resposta.trimmed().isEmpty()) {
@@ -766,7 +756,7 @@ void QuestoesPage::recarregar() {
         } else if (filtro == "ultimos_30" && q.criadaEm.date() < hoje.addDays(-29)) {
             incluir = false;
         }
-        
+
         if (incluir) {
             questoesFiltradas.append(q);
         }
@@ -787,11 +777,9 @@ void QuestoesPage::recarregar() {
 
 void QuestoesPage::excluirTodasQuestoes() {
     const int resposta = QMessageBox::question(
-        this,
-        "Remover todas as questoes",
+        this, "Remover todas as questoes",
         "Tem certeza que deseja apagar todas as questoes? Esta acao nao pode ser desfeita.",
-        QMessageBox::Yes | QMessageBox::No
-    );
+        QMessageBox::Yes | QMessageBox::No);
     if (resposta != QMessageBox::Yes) {
         return;
     }
@@ -803,11 +791,7 @@ void QuestoesPage::excluirTodasQuestoes() {
 
 void QuestoesPage::importarKeepJson() {
     const QStringList files = QFileDialog::getOpenFileNames(
-        this,
-        "Selecionar arquivos JSON do Google Keep",
-        QString(),
-        "JSON (*.json)"
-    );
+        this, "Selecionar arquivos JSON do Google Keep", QString(), "JSON (*.json)");
     if (files.isEmpty()) {
         return;
     }
@@ -883,11 +867,8 @@ void QuestoesPage::importarKeepJson() {
 
     krepo::QuestaoRepoSQLite::InvalidarCacheBasico();
     recarregar();
-    QMessageBox::information(
-        this,
-        "Importacao concluida",
-        QString("Importadas: %1\nIgnoradas: %2").arg(imported).arg(skipped)
-    );
+    QMessageBox::information(this, "Importacao concluida",
+                             QString("Importadas: %1\nIgnoradas: %2").arg(imported).arg(skipped));
 }
 
 void QuestoesPage::adicionarItemLista(const Questao& q) {
@@ -900,9 +881,7 @@ void QuestoesPage::adicionarItemLista(const Questao& q) {
     item->setData(Qt::UserRole + 99, false);
 
     const QString enunciadoPreview = q.enunciado;
-    const QString respostaPreview = q.resposta.trimmed().isEmpty()
-        ? "Sem resposta"
-        : q.resposta;
+    const QString respostaPreview = q.resposta.trimmed().isEmpty() ? "Sem resposta" : q.resposta;
 
     auto* card = new QWidget();
     card->setObjectName("listaCard");
@@ -1079,10 +1058,8 @@ void QuestoesPage::removerLoadingItem() {
     loadingItem = nullptr;
 }
 
-bool QuestoesPage::abrirDialogQuestao(Questao& ioQuestao,
-                                      const QString& titulo,
-                                      const QString& header,
-                                      const QString& actionLabel) {
+bool QuestoesPage::abrirDialogQuestao(Questao& ioQuestao, const QString& titulo,
+                                      const QString& header, const QString& actionLabel) {
     QDialog dialog(this);
     dialog.setWindowTitle(titulo);
     dialog.setModal(true);
@@ -1171,9 +1148,11 @@ bool QuestoesPage::abrirDialogQuestao(Questao& ioQuestao,
     preencherListaImagens(listaRespostaImgs, ioQuestao.respostaImagens, true);
 
     QSet<QString> newlyAdded;
-    const bool hasRespostaInicial = !ioQuestao.resposta.trimmed().isEmpty() || !ioQuestao.respostaImagens.isEmpty();
+    const bool hasRespostaInicial =
+        !ioQuestao.resposta.trimmed().isEmpty() || !ioQuestao.respostaImagens.isEmpty();
     respostaContainer->setVisible(hasRespostaInicial);
-    btnCampoAdicionalDialog->setText(hasRespostaInicial ? "Remover campo adicional" : "Adicionar campo adicional");
+    btnCampoAdicionalDialog->setText(hasRespostaInicial ? "Remover campo adicional"
+                                                        : "Adicionar campo adicional");
 
     auto addImagePath = [&](QListWidget* list, const QString& path) {
         if (path.isEmpty()) {
@@ -1185,25 +1164,24 @@ bool QuestoesPage::abrirDialogQuestao(Questao& ioQuestao,
 
     auto addImageFromFile = [&](QListWidget* list, const QString& prefix) {
         const QStringList files = QFileDialog::getOpenFileNames(
-            &dialog,
-            "Selecionar imagens",
-            QString(),
-            "Imagens (*.png *.jpg *.jpeg *.bmp)"
-        );
+            &dialog, "Selecionar imagens", QString(), "Imagens (*.png *.jpg *.jpeg *.bmp)");
         for (const auto& file : files) {
             const QString saved = ImageStore::saveImageFromFile(file, prefix);
             if (saved.isEmpty()) {
-                QMessageBox::warning(&dialog, "Imagem", "Nao foi possivel carregar a imagem selecionada.");
+                QMessageBox::warning(&dialog, "Imagem",
+                                     "Nao foi possivel carregar a imagem selecionada.");
                 continue;
             }
             addImagePath(list, saved);
         }
     };
 
-    auto addImageFromClipboard = [&](QListWidget* list, const QImage& image, const QString& prefix) {
+    auto addImageFromClipboard = [&](QListWidget* list, const QImage& image,
+                                     const QString& prefix) {
         const QString saved = ImageStore::saveImage(image, prefix);
         if (saved.isEmpty()) {
-            QMessageBox::warning(&dialog, "Imagem", "Nao foi possivel colar a imagem do clipboard.");
+            QMessageBox::warning(&dialog, "Imagem",
+                                 "Nao foi possivel colar a imagem do clipboard.");
             return;
         }
         addImagePath(list, saved);
@@ -1216,26 +1194,20 @@ bool QuestoesPage::abrirDialogQuestao(Questao& ioQuestao,
         }
     };
 
-    connect(btnAddEnunciadoImg, &QPushButton::clicked, [&]() {
-        addImageFromFile(listaEnunciadoImgs, "enunciado");
-    });
-    connect(btnAddRespostaImg, &QPushButton::clicked, [&]() {
-        addImageFromFile(listaRespostaImgs, "resposta");
-    });
-    connect(btnRemEnunciadoImg, &QPushButton::clicked, [&]() {
-        removeSelectedImage(listaEnunciadoImgs);
-    });
-    connect(btnRemRespostaImg, &QPushButton::clicked, [&]() {
-        removeSelectedImage(listaRespostaImgs);
-    });
+    connect(btnAddEnunciadoImg, &QPushButton::clicked,
+            [&]() { addImageFromFile(listaEnunciadoImgs, "enunciado"); });
+    connect(btnAddRespostaImg, &QPushButton::clicked,
+            [&]() { addImageFromFile(listaRespostaImgs, "resposta"); });
+    connect(btnRemEnunciadoImg, &QPushButton::clicked,
+            [&]() { removeSelectedImage(listaEnunciadoImgs); });
+    connect(btnRemRespostaImg, &QPushButton::clicked,
+            [&]() { removeSelectedImage(listaRespostaImgs); });
     connect(btnCampoAdicionalDialog, &QPushButton::clicked, [&]() {
         if (respostaContainer->isVisible()) {
-            const int resposta = QMessageBox::question(
-                &dialog,
-                "Remover campo adicional",
-                "Deseja remover o campo adicional e apagar o conteudo?",
-                QMessageBox::Yes | QMessageBox::No
-            );
+            const int resposta =
+                QMessageBox::question(&dialog, "Remover campo adicional",
+                                      "Deseja remover o campo adicional e apagar o conteudo?",
+                                      QMessageBox::Yes | QMessageBox::No);
             if (resposta != QMessageBox::Yes) {
                 return;
             }
@@ -1262,7 +1234,8 @@ bool QuestoesPage::abrirDialogQuestao(Questao& ioQuestao,
 
     connect(buttons, &QDialogButtonBox::accepted, [&]() {
         if (edtEnunciado->toPlainText().trimmed().isEmpty()) {
-            QMessageBox::warning(&dialog, tr("Validation"), tr("The question text cannot be empty."));
+            QMessageBox::warning(&dialog, tr("Validation"),
+                                 tr("The question text cannot be empty."));
             return;
         }
         dialog.accept();
@@ -1270,7 +1243,8 @@ bool QuestoesPage::abrirDialogQuestao(Questao& ioQuestao,
     connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
 
     if (dialog.exec() != QDialog::Accepted) {
-        const QStringList finalPaths = coletarPaths(listaEnunciadoImgs) + coletarPaths(listaRespostaImgs);
+        const QStringList finalPaths =
+            coletarPaths(listaEnunciadoImgs) + coletarPaths(listaRespostaImgs);
         for (const auto& path : newlyAdded) {
             if (!finalPaths.contains(path)) {
                 ImageStore::removeImageFile(path);
@@ -1349,7 +1323,8 @@ void QuestoesPage::showEvent(QShowEvent* event) {
 void QuestoesPage::resizeEvent(QResizeEvent* event) {
     QWidget::resizeEvent(event);
     if (contentStack && contentStack->currentWidget() == detailPage) {
-        renderImageListFullWidth(scrollImagensEnunciado, enunciadoImagesLayout, detalheEnunciadoPaths);
+        renderImageListFullWidth(scrollImagensEnunciado, enunciadoImagesLayout,
+                                 detalheEnunciadoPaths);
         renderImageListFullWidth(scrollImagensResposta, respostaImagesLayout, detalheRespostaPaths);
     }
     atualizarTamanhoItensLista();
