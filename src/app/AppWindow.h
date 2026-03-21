@@ -30,6 +30,7 @@ class AppWindow : public QMainWindow {
     void atualizarSpacerSidebar();
     void animatePageTransition(int pageIndex);
     void applyStyleSheet(const QString& path);
+    void recarregarEstilo();
     void carregarIdioma();
     void applyLanguage(const QString& languageId);
     void aplicarIdioma(const QString& languageId);
@@ -51,3 +52,4 @@ class AppWindow : public QMainWindow {
 };
 
 #endif  // KAPRAXIS_APP_APPWINDOW_H_
+    

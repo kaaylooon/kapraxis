@@ -14,6 +14,7 @@
 #include <QTextEdit>
 #include <QTimer>
 #include <QWidget>
+#include <QHBoxLayout>
 
 #include "../domain/Questao.h"
 
@@ -54,8 +55,7 @@ class QuestoesPage : public QWidget {
 
     void mostrarDetalhes(QListWidgetItem* item);
 
-    void carregarEstilo();
-    void salvarResposta();
+    void salvarAlteracoes();
     void filtrarQuestoes(int index);
     void buscarQuestoes(const QString& texto);
     void focarBusca();
@@ -63,6 +63,9 @@ class QuestoesPage : public QWidget {
    private:
     void recarregar();
     void setupShortcuts();
+    void setupDetailsPanel();
+    void setupCampoAdicionalConnections();
+    void setupImagePasteConnections();
     void destacarItem(QListWidgetItem* item);
     void adicionarItemLista(const Questao& q);
     void atualizarTamanhoItensLista();
@@ -71,22 +74,20 @@ class QuestoesPage : public QWidget {
     void removerLoadingItem();
     bool abrirDialogQuestao(Questao& ioQuestao, const QString& titulo, const QString& header,
                             const QString& actionLabel);
+
     kapraxis::repo::QuestaoRepoSQLite* repo;
 
+    // Componentes principais
     QListWidget* lista;
-    QPushButton* btnAdd;
-    QPushButton* btnEdit;
-    QPushButton* btnDelete;
+    QLineEdit* txtBusca;
+    QComboBox* comboFilterTag;
+    QComboBox* comboGroupBy;
+    QStackedWidget* contentStack;
+    QWidget* listPage;
+    QWidget* detailPage;
+    QPushButton* btnVoltarLista;
 
-    QLabel* lblEnunciado;
-    QLabel* lblResposta;
-    QLabel* lblTags;
-    QLabel* lblData;
-    QLabel* lblTitle;
-    QLabel* lblInfo;
-
-    ClipboardTextEdit* txtEnunciado;
-    ClipboardTextEdit* txtResposta;
+    // Componentes do painel de detalhes
     QGroupBox* detailsPanelGroup;
     QGroupBox* respostaGroup;
     QPushButton* btnCampoAdicional;
@@ -96,27 +97,27 @@ class QuestoesPage : public QWidget {
     QScrollArea* scrollImagensResposta;
     QWidget* enunciadoImagesContainer;
     QWidget* respostaImagesContainer;
-    QVBoxLayout* enunciadoImagesLayout;
-    QVBoxLayout* respostaImagesLayout;
+    QHBoxLayout* enunciadoImagesLayout;
+    QHBoxLayout* respostaImagesLayout;
     QStringList detalheEnunciadoPaths;
     QStringList detalheRespostaPaths;
 
-    QLineEdit* txtBusca;
+    // Componentes de texto
+    ClipboardTextEdit* txtEnunciado;
+    ClipboardTextEdit* txtResposta;
+    QLabel* lblTags;
+    QLabel* lblData;
+    QLabel* lblInfo;
 
-    QComboBox* comboFilterTag;
-    QComboBox* comboGroupBy;
-    QStackedWidget* contentStack;
-    QWidget* listPage;
-    QWidget* detailPage;
-    QPushButton* btnVoltarLista;
-
-    QFrame* rightFrame;
-
+    // Atalhos de teclado
     QShortcut* atalhoNovaQuestao;
     QShortcut* atalhoSalvar;
     QShortcut* atalhoBusca;
 
+    // Timer para auto-save
     QTimer* autoSaveTimer;
+
+    // Paginação
     QList<Questao> renderQueue;
     int renderIndex = 0;
     QString renderGroupMode;
@@ -124,6 +125,9 @@ class QuestoesPage : public QWidget {
     QListWidgetItem* loadingItem = nullptr;
     int lastScrollValue = 0;
     bool forceNextLoad = false;
+
+    static QString buildTagsHtml(const QStringList& tags);
+    static QString groupKeyFor(const QDateTime& dt, const QString& mode);
 };
 
 #endif  // KAPRAXIS_UI_QUESTOESPAGE_H_

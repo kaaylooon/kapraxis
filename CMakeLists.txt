@@ -14,25 +14,25 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets Sql)
 qt6_add_resources(kapraxis_RESOURCES resources.qrc)
 
 add_executable(kapraxis
+    src/app/AppWindow.cpp
+    src/app/AppWindow.h
+    src/main.cpp
     src/repo/questao_repo_sqlite.cpp
     src/repo/questao_repo_sqlite.h
     src/repo/StudyStatsStore.cpp
     src/repo/StudyStatsStore.h
-    src/main.cpp
-    src/app/AppWindow.cpp
-    src/app/AppWindow.h
-    src/ui/QuestoesPage.cpp
-    src/ui/QuestoesPage.h
+    src/ui/BlocosPage.cpp
+    src/ui/BlocosPage.h
+    src/ui/ClipboardTextEdit.cpp
+    src/ui/ClipboardTextEdit.h
     src/ui/InicioPage.cpp
     src/ui/InicioPage.h
+    src/ui/QuestoesPage.cpp
+    src/ui/QuestoesPage.h
     src/ui/SettingsPage.cpp
     src/ui/SettingsPage.h
-    src/ui/BlocosPage.h
-    src/ui/BlocosPage.cpp
-    src/ui/ClipboardTextEdit.h
-    src/ui/ClipboardTextEdit.cpp
-    src/utils/ImageStore.h
     src/utils/ImageStore.cpp
+    src/utils/ImageStore.h
     ${kapraxis_RESOURCES}
 )
 

@@ -118,6 +118,12 @@ AppWindow::AppWindow(QWidget* parent) : QMainWindow(parent) {
     connect(settingsPage, &SettingsPage::importKeepRequested, questoesPage,
             &QuestoesPage::importarKeepJson);
     connect(settingsPage, &SettingsPage::languageChanged, this, &AppWindow::aplicarIdioma);
+
+    QShortcut* reloadStyleShortcut = new QShortcut(QKeySequence(Qt::Key_F5), this);
+    connect(reloadStyleShortcut, &QShortcut::activated, this, &AppWindow::recarregarEstilo);
+
+    QShortcut* reloadStyleShortcut2 = new QShortcut(QKeySequence("Ctrl+R"), this);
+    connect(reloadStyleShortcut2, &QShortcut::activated, this, &AppWindow::recarregarEstilo);
 }
 
 void AppWindow::carregarEstiloGlobal() {
@@ -129,6 +135,23 @@ void AppWindow::carregarEstiloGlobal() {
 void AppWindow::resizeEvent(QResizeEvent* event) {
     QMainWindow::resizeEvent(event);
     atualizarSpacerSidebar();
+}
+
+void AppWindow::recarregarEstilo() {
+    QString path = "/home/kaylon/Projects/kapraxis/resources/styles/theme-light.qss";
+    
+    // Se quiser recarregar do sistema de arquivos (não dos resources)
+    // path = "/caminho/para/seu/arquivo.qss";
+    
+    if (currentThemeId == "soft") {
+        path = "/home/kaylon/Projects/kapraxis/resources/styles/theme-soft.qss";
+    } else if (currentThemeId == "light") {
+        path = "/home/kaylon/Projects/kapraxis/resources/styles/theme-light.qss";
+    } else if (currentThemeId == "palette") {
+        path = ":/home/kaylon/Projects/kapraxis/resources/styles/theme-palette.qss";
+    }
+    
+    applyStyleSheet(path);
 }
 
 void AppWindow::atualizarSpacerSidebar() {
