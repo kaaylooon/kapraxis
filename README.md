@@ -1,9 +1,6 @@
 # Kapraxis
 
 <img width="1920" height="1046" alt="Kapraxis - Question Management App" src="https://github.com/user-attachments/assets/3dc706af-18d1-48d2-bb8c-e49f5d216a26" />
-<img width="1920" height="1046" alt="image" src="https://github.com/user-attachments/assets/3dc706af-18d1-48d2-bb8c-e49f5d216a26" />
-<hr>
-
 
 ---
 
@@ -43,6 +40,7 @@ brew install qt cmake
 
 # Windows
 choco install cmake qt5-base
+```
 
 ```bash
 src/
@@ -50,6 +48,9 @@ src/
 ├── repo/         # Dados
 ├── utils/        # Serviços
 └── models/       # Estruturas de dados
+```
+
+<hr>
 
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/8e4b32df-025e-4306-9670-1c4a22a8d9ba" />
 
