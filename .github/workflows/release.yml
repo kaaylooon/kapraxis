@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Publish to Maven Repository
+        run: ./gradlew publish
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: '${{ github.ref }}'
+          files: 'build/libs/*.jar'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
